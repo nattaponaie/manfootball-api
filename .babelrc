@@ -1,0 +1,25 @@
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "regenerator": true
+      }
+    ],
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./src"
+        ],
+        "alias": {
+          "utils": "./src/utils",
+          "middleware": "./src/middleware",
+          "templates": "./src/templates",
+          "models": "./src/models"
+        }
+      }
+    ]
+  ]
+}
