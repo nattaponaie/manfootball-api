@@ -17,7 +17,8 @@ module.exports = {
           "utils": "./src/utils",
           "middleware": "./src/middleware",
           "templates": "./src/templates",
-          "models": "./src/models"
+          "models": "./src/models",
+          "services": "./src/services"
         }
       }
     }
