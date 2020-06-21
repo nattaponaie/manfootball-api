@@ -5,8 +5,12 @@ import { get } from 'lodash';
 import commandsTemplates from 'templates/commands';
 import errorTemplates from 'templates/error';
 import eventTemplates from 'templates/event';
+import playerTemplates from 'templates/player';
 
 import Event from 'models/event';
+
+import eventService from 'services/event';
+import peopleService from 'services/people';
 
 import asyncWrapper from 'middleware/async-wrapper';
 import { logError, logInfo } from 'utils/logger';
@@ -15,13 +19,13 @@ const app = express();
 
 const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
-  console.info(`🍺  Ready ... ${PORT}`);
+  logInfo(`🍺  Ready ... ${PORT}`);
 });
 
 const router = express.Router();
 const LINE_OA_CONFIG = {
-  channelAccessToken: '',
-  channelSecret: '',
+  channelAccessToken: 'x61xa2B/jhnKISOdAfG/3Tc6VR6J6F2vYEVXQJY2HJ9fI04lZdtOJyoPqEmjrK0dFliJx/n1TsjKIEL4sa3dKp+t6RuAeHDFxq//99p+USZ2dBxOPj/fgE3lYUAyaS+KJxmzJGpmMMyxcH6xuNwzZgdB04t89/1O/w1cDnyilFU=',
+  channelSecret: '74ccbe6c47c3707da14cb47323a23c63',
 };
 const client = new line.Client(LINE_OA_CONFIG);
 const eventModel = new Event();
@@ -67,29 +71,33 @@ const handleEvent = async (client, event) => {
         const message = await commandsTemplates.messages();
         return client.replyMessage(event.replyToken, message);
       } else if (eventMessageText.includes('/สร้าง')) {
-        const splitedMsg = eventMessageText.split(' ') ;
-        if (splitedMsg.length !== 3) {
-          const message = await errorTemplates.messages('คำสั่งผิดจ้า /สร้าง (สถานที่) (เวลา)');
-          return client.replyMessage(event.replyToken, message);
+        try {
+          const {
+            location,
+            locationUrl,
+            time,
+          } = eventService.create(eventModel, eventMessageText);
+          return client.replyMessage(event.replyToken, eventTemplates.messages(
+            location,
+            locationUrl,
+            time
+          ));
+        } catch (error) {
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }
-        
-        eventModel.setLocation(splitedMsg[1]);
-        eventModel.setTime(splitedMsg[2]);
-        const {
-          location,
-          locationUrl,
-          time,
-        } = eventModel.getEventDesc();
-        return client.replyMessage(event.replyToken, eventTemplates.messages(
-          location,
-          locationUrl,
-          time
-        ));
       } else if (eventMessageText.includes('/+')) {
-        console.log('eventMessageText', eventMessageText);
-        const splitedMsg = eventMessageText.split('/+');
-        console.log('splitedMsg', splitedMsg);
-        
+        try {
+          const profile = await client.getProfile(event.source.userId);
+          const {
+            displayName,
+            pictureUrl,
+            totalPlayer,
+            addedCount,
+          } = peopleService.addPlayer(eventModel, eventMessageText, profile);
+          return client.replyMessage(event.replyToken, await playerTemplates.messages(displayName, pictureUrl, totalPlayer, addedCount));
+        } catch (error) {
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+        }
         
       }
     }
