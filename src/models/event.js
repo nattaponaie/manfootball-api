@@ -1,10 +1,21 @@
+import People from 'models/people';
+
 class Event {
+  constructor() {
+    this.people = new People();
+    this.isCreated = false;
+  }
+
   getEventDesc() {
     return {
-      location: this.location,
-      locationUrl: this.locationUrl,
-      time: this.time,
+      location: this.location || 'ไม่รู้',
+      locationUrl: this.locationUrl || 'ไม่รู้',
+      time: this.time || 'ไม่รู้',
     };
+  }
+
+  getIsCreated() {
+    return this.isCreated;
   }
 
   getLocation() {
@@ -13,6 +24,10 @@ class Event {
 
   getLocationUrl() {
     return this.locationUrl;
+  }
+
+  getPeople() {
+    return this.people;
   }
 
   getTime() {
@@ -28,6 +43,10 @@ class Event {
 
   setTime(time) {
     this.time = time;
+  }
+
+  setIsCreated(flag) {
+    this.isCreated = flag;
   }
 }
 
