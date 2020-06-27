@@ -1,5 +1,6 @@
 const commandList = [
   { cmd: '/สร้าง', description: 'ตัวอย่าง: /สร้าง (สถานที่) (เวลา)' },
+  { cmd: '/เตะบอล', description: 'ดูว่่่ามีเตะบอลเมื่อไร' },
   { cmd: '/+', description: 'ตัวอย่าง: /+1, /+2' },
 ];
 

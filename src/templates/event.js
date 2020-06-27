@@ -1,4 +1,4 @@
-const messages = (locationName, locationUrl, time) => ({
+const messages = (locationName, locationUrl, time, totalPlayers = 0) => ({
   'type': 'flex',
   'altText': 'เตะบอล',
   'contents': {
@@ -14,11 +14,6 @@ const messages = (locationName, locationUrl, time) => ({
       'type': 'box',
       'layout': 'vertical',
       'spacing': 'md',
-      'action': {
-        'type': 'uri',
-        'label': 'Action',
-        'uri': 'https://linecorp.com',
-      },
       'contents': [
         {
           'type': 'text',
@@ -68,6 +63,21 @@ const messages = (locationName, locationUrl, time) => ({
                   'weight': 'bold',
                 },
               ],
+            },
+            {
+              'type': 'box',
+              'layout': 'vertical',
+              'contents': [
+                {
+                  'type': 'text',
+                  'text': `จำนวน: ${totalPlayers} คน`,
+                  'weight': 'bold',
+                },
+              ],
+            },
+            {
+              'type': 'text',
+              'text': 'พิมพ์ /+1 เพื่อบวก',
             },
           ],
         },

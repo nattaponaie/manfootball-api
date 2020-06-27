@@ -80,7 +80,19 @@ const handleEvent = async (client, event) => {
           return client.replyMessage(event.replyToken, eventTemplates.messages(
             location,
             locationUrl,
-            time
+      } else if (eventMessageText.includes('/เตะบอล')) {
+        try {
+          const {
+            location,
+            locationUrl,
+            time,
+            totalPlayers,
+          } = eventService.getEventDesc(eventModel);
+          return client.replyMessage(event.replyToken, eventTemplates.messages(
+            location,
+            locationUrl,
+            time,
+            totalPlayers
           ));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
