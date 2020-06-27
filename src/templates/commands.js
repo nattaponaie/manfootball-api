@@ -53,33 +53,6 @@ const messages = async () => ({
             },
           ],
         })),
-        // {
-        //   'type': 'box',
-        //   'layout': 'vertical',
-        //   'spacing': 'sm',
-        //   'contents': [
-        //     {
-        //       'type': 'box',
-        //       'layout': 'vertical',
-        //       'contents': [
-        //         {
-        //           'type': 'text',
-        //           'text': '1. /สร้าง',
-        //           'flex': 0,
-        //           'margin': 'sm',
-        //           'weight': 'bold',
-        //         },
-        //         {
-        //           'type': 'text',
-        //           'text': 'ตัวอย่าง: /สร้าง (สถานที่) (เวลา)',
-        //           'size': 'xs',
-        //           'align': 'start',
-        //           'color': '#AAAAAA',
-        //         },
-        //       ],
-        //     },
-        //   ],
-        // },
       ],
     },
   },
