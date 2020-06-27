@@ -1,4 +1,65 @@
-const messages = (displayName, profileUrl, totalPlayer, addedCount) => ({
+const allPlayers = (currentPlayers = []) => ({
+  'type': 'flex',
+  'altText': 'ใครไปบ้าง',
+  'contents': {
+    'type': 'bubble',
+    'body': {
+      'type': 'box',
+      'layout': 'vertical',
+      'spacing': 'md',
+      'contents': [
+        {
+          'type': 'text',
+          'text': 'รายชื่อนักเตะ',
+          'size': 'xl',
+          'weight': 'bold',
+        },
+        ...currentPlayers.map((player, index) => ({
+          'type': 'box',
+          'layout': 'horizontal',
+          'spacing': 'none',
+          'contents': [
+            {
+              'type': 'image',
+              'url': player.pictureUrl,
+              'margin': 'none',
+              'align': 'center',
+              'size': 'xxs',
+              'aspectMode': 'fit',
+            },
+            {
+              'type': 'text',
+              'text': `${index+1}. ${player.displayName}`,
+              'flex': 1,
+              'margin': 'sm',
+              'size': 'xs',
+              'align': 'start',
+              'gravity': 'center',
+              'weight': 'bold',
+              'wrap': true,
+            },
+          ],
+        })),
+      ],
+    },
+    'footer': {
+      'type': 'box',
+      'layout': 'vertical',
+      'contents': [
+        {
+          'type': 'separator',
+        },
+        {
+          'type': 'text',
+          'text': `รวมทั้งหมด: ${currentPlayers.length} คน`,
+          'margin': 'md',
+        },
+      ],
+    },
+  },
+});
+
+const addPlayer = (displayName, profileUrl, totalPlayer, addedCount) => ({
   'type': 'flex',
   'altText': `${displayName} บวกเพิ่มจ้าา`,
   'contents': {
@@ -137,6 +198,7 @@ const removePlayer = (displayName, profileUrl, totalPlayer, removedCount) => ({
 });
 
 export default {
-  messages,
+  addPlayer,
+  allPlayers,
   removePlayer,
 };
