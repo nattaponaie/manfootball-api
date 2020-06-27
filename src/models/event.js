@@ -8,9 +8,10 @@ class Event {
 
   getEventDesc() {
     return {
-      location: this.location || 'ไม่รู้',
-      locationUrl: this.locationUrl || 'ไม่รู้',
-      time: this.time || 'ไม่รู้',
+      location: this.location || 'ไม่มี',
+      locationUrl: this.locationUrl || 'ไม่มี',
+      time: this.time || 'ไม่มี',
+      totalPlayers: this.people.getTotalPlayer() || 0,
     };
   }
 
