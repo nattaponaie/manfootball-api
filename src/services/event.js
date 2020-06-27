@@ -14,6 +14,14 @@ const create = (eventModel, eventMessageText) => {
   return eventModel.getEventDesc();
 };
 
+const getEventDesc = (eventModel) => {
+  if (!eventModel.getIsCreated()) {
+    throw new Error('ยังไม่มีเตะจ้า อยากเปิดพิพม์ /สร้าง (สถานที่) (เวลา)');
+  }
+  return eventModel.getEventDesc();
+};
+
 export default {
   create,
+  getEventDesc,
 };
