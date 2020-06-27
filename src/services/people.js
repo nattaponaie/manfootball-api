@@ -106,7 +106,20 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
   };
 };
 
+const getCurrentPlayers = (eventModel) => {
+  if (!eventModel.getIsCreated()) {
+    throw new Error('ยังไม่มีเตะจ้า อยากเปิดพิพม์ /สร้าง (สถานที่) (เวลา)');
+  }
+
+  const currentPlayers = eventModel.getPeople().getPlayers();
+  if (currentPlayers.length === 0) {
+    throw new Error('ยังไม่มีคนบวกเลย :(');
+  }
+  return currentPlayers;
+};
+
 export default {
   addPlayer,
+  getCurrentPlayers,
   removePlayer,
 };
