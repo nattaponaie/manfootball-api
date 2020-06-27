@@ -28,7 +28,7 @@ const LINE_OA_CONFIG = {
   channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
 const client = new line.Client(LINE_OA_CONFIG);
-const eventModel = new Event();
+let eventModel = new Event();
 
 router.post(
   '/webhook',
@@ -66,6 +66,7 @@ const handleEvent = async (client, event) => {
   
     if (eventType === 'message' && eventMessageType === 'text') {
       const eventMessageText = get(event, ['message', 'text']);
+      const userId = event.source.userId;
 
       if (eventMessageText === '/คำสั่ง') {
         const message = await commandsTemplates.messages();
@@ -106,24 +107,42 @@ const handleEvent = async (client, event) => {
         }
       } else if (eventMessageText.includes('/+')) {
         try {
-          const profile = await client.getProfile(event.source.userId);
+          const profile = await client.getProfile(userId);
           const {
             displayName,
             pictureUrl,
             totalPlayer,
             addedCount,
           } = peopleService.addPlayer(eventModel, eventMessageText, profile);
-          return client.replyMessage(event.replyToken, await playerTemplates.messages(displayName, pictureUrl, totalPlayer, addedCount));
+          return client.replyMessage(event.replyToken, await playerTemplates.addPlayer(displayName, pictureUrl, totalPlayer, addedCount));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }
       } else if (eventMessageText.includes('/-')) {
         try {
-          const profile = await client.getProfile(event.source.userId);
+          const profile = await client.getProfile(userId);
           const {
             displayName, pictureUrl, totalPlayer, removedCount,
           } = peopleService.removePlayer(eventModel, eventMessageText, profile);
           return client.replyMessage(event.replyToken, playerTemplates.removePlayer(displayName, pictureUrl, totalPlayer, removedCount));
+        } catch (error) {
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+        }
+      } else if (eventMessageText.includes('/ใครไปบ้าง')) {
+        try {
+          const currentPlayers = peopleService.getCurrentPlayers(eventModel);
+          return client.replyMessage(event.replyToken, playerTemplates.allPlayers(currentPlayers));
+        } catch (error) {
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+        }
+      } else if (eventMessageText.includes('/ยกเลิก')) {
+        try {
+          if (userId !== '3b611def95ce29fea20ee4f56a9abf2f') {
+            return;
+          }
+          const profile = await client.getProfile(userId);
+          eventModel = new Event();
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(`อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }
