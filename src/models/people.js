@@ -12,12 +12,16 @@ class People {
     this.players.push(player);
   }
 
-  getPlayer() {
+  getPlayers() {
     return this.players;
   }
 
   getTotalPlayer() {
     return this.players.length;
+  }
+
+  setPlayers(players) {
+    this.players = players;
   }
 }
 

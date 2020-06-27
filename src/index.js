@@ -76,10 +76,17 @@ const handleEvent = async (client, event) => {
             location,
             locationUrl,
             time,
+            totalPlayers,
           } = eventService.create(eventModel, eventMessageText);
           return client.replyMessage(event.replyToken, eventTemplates.messages(
             location,
             locationUrl,
+            time,
+            totalPlayers,
+          ));
+        } catch (error) {
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+        }
       } else if (eventMessageText.includes('/เตะบอล')) {
         try {
           const {
@@ -110,7 +117,16 @@ const handleEvent = async (client, event) => {
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }
-        
+      } else if (eventMessageText.includes('/-')) {
+        try {
+          const profile = await client.getProfile(event.source.userId);
+          const {
+            displayName, pictureUrl, totalPlayer, removedCount,
+          } = peopleService.removePlayer(eventModel, eventMessageText, profile);
+          return client.replyMessage(event.replyToken, playerTemplates.removePlayer(displayName, pictureUrl, totalPlayer, removedCount));
+        } catch (error) {
+          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+        }
       }
     }
   } catch (error) {
