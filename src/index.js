@@ -24,8 +24,8 @@ app.listen(PORT, () => {
 
 const router = express.Router();
 const LINE_OA_CONFIG = {
-  channelAccessToken: 'x61xa2B/jhnKISOdAfG/3Tc6VR6J6F2vYEVXQJY2HJ9fI04lZdtOJyoPqEmjrK0dFliJx/n1TsjKIEL4sa3dKp+t6RuAeHDFxq//99p+USZ2dBxOPj/fgE3lYUAyaS+KJxmzJGpmMMyxcH6xuNwzZgdB04t89/1O/w1cDnyilFU=',
-  channelSecret: '74ccbe6c47c3707da14cb47323a23c63',
+  channelAccessToken: process.env.LINE_OA_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
 const client = new line.Client(LINE_OA_CONFIG);
 const eventModel = new Event();
