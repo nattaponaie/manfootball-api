@@ -31,7 +31,7 @@ const client = new line.Client(LINE_OA_CONFIG);
 let eventModel = new Event();
 
 router.post(
-  '/webhook',
+  '/api/webhook',
   line.middleware(LINE_OA_CONFIG),
   asyncWrapper(async (req, res) => {
     logInfo(req.body.events);
