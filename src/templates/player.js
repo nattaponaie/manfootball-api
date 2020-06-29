@@ -17,7 +17,7 @@ const allPlayers = (currentPlayers = []) => ({
         ...currentPlayers.map((player, index) => ({
           'type': 'box',
           'layout': 'horizontal',
-          'spacing': 'none',
+          'spacing': 'md',
           'contents': [
             {
               'type': 'image',
