@@ -17,11 +17,6 @@ import asyncWrapper from 'middleware/async-wrapper';
 import { logError, logInfo } from 'utils/logger';
 
 const app = express();
-app.use(bodyParser.urlencoded({
-  extended: false,
-}));
-
-app.use(bodyParser.json());
 
 const router = express.Router();
 const LINE_OA_CONFIG = {
@@ -154,6 +149,12 @@ const handleEvent = async (client, event) => {
     throw error;
   }
 };
+
+app.use(bodyParser.urlencoded({
+  extended: false,
+}));
+
+app.use(bodyParser.json());
 
 app.use(router);
 const PORT = process.env.PORT || 3000;
