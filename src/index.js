@@ -1,3 +1,4 @@
+import bodyParser from 'body-parser';
 import express from 'express';
 import * as line from '@line/bot-sdk';
 import { get } from 'lodash';
@@ -16,11 +17,11 @@ import asyncWrapper from 'middleware/async-wrapper';
 import { logError, logInfo } from 'utils/logger';
 
 const app = express();
+app.use(bodyParser.urlencoded({
+  extended: false,
+}));
 
-const PORT = process.env.PORT || 9000;
-app.listen(PORT, () => {
-  logInfo(`🍺  Ready ... ${PORT}`);
-});
+app.use(bodyParser.json());
 
 const router = express.Router();
 const LINE_OA_CONFIG = {
@@ -155,3 +156,7 @@ const handleEvent = async (client, event) => {
 };
 
 app.use(router);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  logInfo(`🍺  Ready ... ${PORT}`);
+});
