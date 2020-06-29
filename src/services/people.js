@@ -115,7 +115,24 @@ const getCurrentPlayers = (eventModel) => {
   if (currentPlayers.length === 0) {
     throw new Error('ยังไม่มีคนบวกเลย :(');
   }
-  return currentPlayers;
+
+  const allPlayers = [];
+  for(const player of currentPlayers) {
+    const foundPlayer = allPlayers.find(ply => ply.userId === player.userId);
+    if (!foundPlayer) {
+      player.quantity = 1;
+      allPlayers.push(player);
+    } else {
+      if (!foundPlayer.quantity) {
+        foundPlayer.quantity = 0;
+      }
+      foundPlayer.quantity = foundPlayer.quantity + 1;
+    }
+  }
+  console.log('allPlayers', allPlayers);
+  
+
+  return allPlayers;
 };
 
 export default {
