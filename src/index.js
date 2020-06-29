@@ -151,11 +151,11 @@ const handleEvent = async (client, event) => {
   }
 };
 
-app.use(bodyParser.urlencoded({
-  extended: false,
-}));
+// app.use(bodyParser.urlencoded({
+//   extended: false,
+// }));
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 app.use(router);
 const PORT = process.env.PORT || 3000;
