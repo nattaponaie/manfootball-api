@@ -6,8 +6,12 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "yarn clean && yarn babel src -D -d dist/src",
+    "heroku-postbuild": "yarn build",
     "start:dev": "NODE_ENV=development && webpack --watch",
     "start": "NODE_ENV=production && node ./dist/src/index.js"
+  },
+  "engines": {
+    "node": "10.21.0"
   },
   "repository": {
     "type": "git",
