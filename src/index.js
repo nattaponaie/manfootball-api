@@ -23,6 +23,7 @@ const LINE_OA_CONFIG = {
   channelAccessToken: process.env.LINE_OA_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
+logInfo('LINE_OA_CONFIG', { LINE_OA_CONFIG });
 const client = new line.Client(LINE_OA_CONFIG);
 let eventModel = new Event();
 
