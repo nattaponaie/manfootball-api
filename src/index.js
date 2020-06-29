@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import express from 'express';
 import * as line from '@line/bot-sdk';
 import { get } from 'lodash';
@@ -23,7 +22,6 @@ const LINE_OA_CONFIG = {
   channelAccessToken: process.env.LINE_OA_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
-logInfo('LINE_OA_CONFIG', { LINE_OA_CONFIG });
 const client = new line.Client(LINE_OA_CONFIG);
 let eventModel = new Event();
 
@@ -150,12 +148,6 @@ const handleEvent = async (client, event) => {
     throw error;
   }
 };
-
-// app.use(bodyParser.urlencoded({
-//   extended: false,
-// }));
-
-// app.use(bodyParser.json());
 
 app.use(router);
 const PORT = process.env.PORT || 3000;
