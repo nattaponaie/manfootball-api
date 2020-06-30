@@ -21,7 +21,7 @@ const allPlayers = (currentPlayers = [], allPlayersCount = 0) => ({
           'contents': [
             {
               'type': 'image',
-              'url': player.pictureUrl,
+              'url': player.pictureUrl || 'https://19258f51-a-62cb3a1a-s-sites.googlegroups.com/site/tonesahapun/liverpool/liverpool_fc_by_arafah-d4x6qxd.jpg?attachauth=ANoY7crgWaJVtixUjr_eW81DnXViLTa6Dr4C9nAolE4w2qST5vyjbx3Blg70mFdfqyagdjDWovsaBer_HyucBzVB5CafUpc0TAJmFK-qinKgE1RnJkUTvcPzYWdkGSsoz6YgGGSQ1CsAMOgbfXjK1_20StJeMXJV42Q7ZFQFt0zFYA4Vbe87hweo6TMFC5q9LaKDlkOeVSkBFq9ZoVCXDJGzMlkjjRIkx7AjS9J6DZJP5tiImor3EyDCKpl_KTVSVOkPN4CZ0-LM&attredirects=0',
               'margin': 'none',
               'align': 'center',
               'size': 'xxs',
@@ -78,7 +78,7 @@ const addPlayer = (displayName, profileUrl, totalPlayer, addedCount) => ({
     'type': 'bubble',
     'hero': {
       'type': 'image',
-      'url': profileUrl,
+      'url': profileUrl || 'https://19258f51-a-62cb3a1a-s-sites.googlegroups.com/site/tonesahapun/liverpool/liverpool_fc_by_arafah-d4x6qxd.jpg?attachauth=ANoY7crgWaJVtixUjr_eW81DnXViLTa6Dr4C9nAolE4w2qST5vyjbx3Blg70mFdfqyagdjDWovsaBer_HyucBzVB5CafUpc0TAJmFK-qinKgE1RnJkUTvcPzYWdkGSsoz6YgGGSQ1CsAMOgbfXjK1_20StJeMXJV42Q7ZFQFt0zFYA4Vbe87hweo6TMFC5q9LaKDlkOeVSkBFq9ZoVCXDJGzMlkjjRIkx7AjS9J6DZJP5tiImor3EyDCKpl_KTVSVOkPN4CZ0-LM&attredirects=0',
       'size': 'full',
       'aspectRatio': '20:13',
       'aspectMode': 'cover',
@@ -147,7 +147,7 @@ const removePlayer = (displayName, profileUrl, totalPlayer, removedCount) => ({
     'type': 'bubble',
     'hero': {
       'type': 'image',
-      'url': profileUrl,
+      'url': profileUrl || 'https://19258f51-a-62cb3a1a-s-sites.googlegroups.com/site/tonesahapun/liverpool/liverpool_fc_by_arafah-d4x6qxd.jpg?attachauth=ANoY7crgWaJVtixUjr_eW81DnXViLTa6Dr4C9nAolE4w2qST5vyjbx3Blg70mFdfqyagdjDWovsaBer_HyucBzVB5CafUpc0TAJmFK-qinKgE1RnJkUTvcPzYWdkGSsoz6YgGGSQ1CsAMOgbfXjK1_20StJeMXJV42Q7ZFQFt0zFYA4Vbe87hweo6TMFC5q9LaKDlkOeVSkBFq9ZoVCXDJGzMlkjjRIkx7AjS9J6DZJP5tiImor3EyDCKpl_KTVSVOkPN4CZ0-LM&attredirects=0',
       'size': 'full',
       'aspectRatio': '20:13',
       'aspectMode': 'cover',
