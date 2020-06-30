@@ -11,6 +11,7 @@ import eventTemplates from 'templates/event';
 import playerTemplates from 'templates/player';
 
 import eventService from 'services/event';
+import lineService from 'services/line';
 import peopleService from 'services/people';
 
 import asyncWrapper from 'middleware/async-wrapper';
@@ -29,27 +30,6 @@ const LINE_OA_CONFIG = {
   channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
 const client = new line.Client(LINE_OA_CONFIG);
-
-// // eventDBModel.findOne({ isCreated: true }).then(result => console.log('result', result)).catch(error => console.log('error', error));
-// eventDBModel.findOne({}, {}, { sort: { 'createdAt': -1 } }, (err, post) => {
-//   console.log( post );
-// });
-// eventService.findLatest().then(result => console.log('result', result)).catch(error => console.log('error', error));
-
-// let eventModel = new Event();
-
-// eventService.create(eventModel, '/สร้าง บอย 18:00');
-// const testDb = new eventDBModel(eventModel);
-// console.log('testDb', testDb);
-// testDb.save();
-
-router.get(
-  '/test',
-  asyncWrapper(async (req, res) => {
-    const latestEvent = await eventService.findLatest();
-    console.log('latestEvent', latestEvent);
-  }),
-);
 
 router.post(
   '/api/webhook',
@@ -148,7 +128,7 @@ const handleEvent = async (client, event) => {
           //   eventService.addGroupId(eventModel, groupId);
           // }
 
-          const profile = await client.getProfile(userId);
+          const profile = await lineService.getUserProfile(client, event.source);
           const {
             displayName,
             pictureUrl,
@@ -171,7 +151,7 @@ const handleEvent = async (client, event) => {
           //   eventService.addGroupId(eventModel, groupId);
           // }
           
-          const profile = await client.getProfile(userId);
+          const profile = await lineService.getUserProfile(client, event.source);
           const {
             displayName, pictureUrl, totalPlayer, removedCount,
           } = peopleService.removePlayer(eventModel, eventMessageText, profile);
@@ -202,7 +182,7 @@ const handleEvent = async (client, event) => {
           if (!eventModel) {
             eventModel = new eventDBModel();
           }
-          const profile = await client.getProfile(userId);
+          const profile = await lineService.getUserProfile(client, event.source);
           eventModel.isCreated = false;
           eventModel.save();
           return client.replyMessage(event.replyToken, await errorTemplates.messages(`อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`));
