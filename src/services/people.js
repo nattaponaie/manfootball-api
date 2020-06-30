@@ -91,7 +91,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
       throw new Error(`นาย ${displayName} ยังบวกไม่ถึง ${number} คน (บวกไปแล้ว ${foundPlayers.length})`);
     }
 
-    for(let i = 0; i < number+1; i++) {
+    for(let i = 0; i < number; i++) {
       currentPlayers.splice(foundIndexs[i], 1);
     }
   }
@@ -129,9 +129,6 @@ const getCurrentPlayers = (eventModel) => {
       foundPlayer.quantity = foundPlayer.quantity + 1;
     }
   }
-  console.log('allPlayers', allPlayers);
-  
-
   return allPlayers;
 };
 
