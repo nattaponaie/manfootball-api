@@ -175,7 +175,7 @@ const handleEvent = async (client, event, eventModel) => {
         }
       } else if (eventMessageText.includes('/ยกเลิก')) {
         try {
-          if (userId !== '3b611def95ce29fea20ee4f56a9abf2f') {
+          if (userId !== 'U3b611def95ce29fea20ee4f56a9abf2f') {
             return;
           }
           const profile = await client.getProfile(userId);
