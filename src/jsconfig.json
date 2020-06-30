@@ -6,7 +6,8 @@
       "middleware/*": ["middleware/*"],
       "templates/*": ["templates/*"],
       "models/*": ["models/*"],
-      "services/*": ["services/*"]
+      "services/*": ["services/*"],
+      "database/*": ["database/*"]
     }
   }
 }

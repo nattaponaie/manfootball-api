@@ -3,7 +3,7 @@ import {
 } from 'lodash';
 
 const addPlayer = (eventModel, eventMessageText, profile) => {
-  if (!eventModel || !eventModel.getIsCreated()) {
+  if (!eventModel || eventModel.isCreated !== true) {
     throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
   }
 
@@ -25,10 +25,9 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
   // }
 
   let number = parseInt(splitedMsg[1]);
-  const peopleModel = eventModel.getPeople();
   if (isNaN(number)) {
     // if isNan then +1 player
-    peopleModel.addPlayer(userId, displayName, pictureUrl);
+    eventModel.people.players.push(userId, displayName, pictureUrl);
     number = 1;
           
   } else {
@@ -36,20 +35,20 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
       throw new Error(`${displayName} จะบ้าหรอบวกอะไรเยอะแยะ!!`);
     }
     for (let i = 1; i <= number; i++) {
-      peopleModel.addPlayer(userId, displayName, pictureUrl);
+      eventModel.people.players.push(userId, displayName, pictureUrl);
     }
   }
 
   return {
     displayName,
     pictureUrl,
-    totalPlayer: peopleModel.getTotalPlayer(),
+    totalPlayer: eventModel.people.players.length,
     addedCount: number,
   };
 };
 
 const removePlayer = (eventModel, eventMessageText, profile) => {
-  if (!eventModel || !eventModel.getIsCreated()) {
+  if (!eventModel || eventModel.isCreated !== true) {
     throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
   }
 
@@ -64,7 +63,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
     userId,
   } = profile;
 
-  const currentPlayers = eventModel.getPeople().getPlayers();
+  const currentPlayers = eventModel.people.players;
 
   let number = parseInt(splitedMsg[1]);
   if (isNaN(number)) {
@@ -78,7 +77,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
       throw new Error(`หื้มม ${displayName} ยังไม่เคยบวกเลย`);
     }
     number = 1;
-    eventModel.getPeople().setPlayers(currentPlayers);
+    eventModel.people.players = currentPlayers;
   } else {
     if (number < 1) {
       throw new Error(`${displayName} ลบเล่นทำไม !!`);
@@ -94,23 +93,23 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
       }
       return acc.push(item);
     }, []);
-    eventModel.getPeople().setPlayers(removedPlayers);
+    eventModel.people.players = removedPlayers;
   }
 
   return {
     displayName,
     pictureUrl,
-    totalPlayer: eventModel.getPeople().getTotalPlayer(),
+    totalPlayer: eventModel.people.players.length,
     removedCount: number,
   };
 };
 
 const getCurrentPlayers = (eventModel) => {
-  if (!eventModel.getIsCreated()) {
+  if (eventModel.isCreated !== true) {
     throw new Error('ยังไม่มีเตะจ้า อยากเปิดพิพม์ /สร้าง (สถานที่) (เวลา)');
   }
 
-  const currentPlayers = eventModel.getPeople().getPlayers();
+  const currentPlayers = eventModel.people.players;
   if (currentPlayers.length === 0) {
     throw new Error('ยังไม่มีคนบวกเลย :(');
   }

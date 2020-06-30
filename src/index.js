@@ -1,13 +1,14 @@
 import express from 'express';
 import * as line from '@line/bot-sdk';
 import { get } from 'lodash';
+import mongoose from 'mongoose';
+
+import eventDBModel from 'database/models/event';
 
 import commandsTemplates from 'templates/commands';
 import errorTemplates from 'templates/error';
 import eventTemplates from 'templates/event';
 import playerTemplates from 'templates/player';
-
-import Event from 'models/event';
 
 import eventService from 'services/event';
 import peopleService from 'services/people';
@@ -17,13 +18,38 @@ import { logError, logInfo } from 'utils/logger';
 
 const app = express();
 
+mongoose.connect(`mongodb+srv://manman-football-prod:${process.env.DB_PASSWORD}@manman-football.tsoky.mongodb.net/manman-db?retryWrites=true&w=majority`, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => logInfo('Connect to MongoDB successfully')).catch((error) => logError('Error connection with MongoDB', error));
+
 const router = express.Router();
 const LINE_OA_CONFIG = {
   channelAccessToken: process.env.LINE_OA_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
 const client = new line.Client(LINE_OA_CONFIG);
-let eventModel = new Event();
+
+// // eventDBModel.findOne({ isCreated: true }).then(result => console.log('result', result)).catch(error => console.log('error', error));
+// eventDBModel.findOne({}, {}, { sort: { 'createdAt': -1 } }, (err, post) => {
+//   console.log( post );
+// });
+// eventService.findLatest().then(result => console.log('result', result)).catch(error => console.log('error', error));
+
+// let eventModel = new Event();
+
+// eventService.create(eventModel, '/สร้าง บอย 18:00');
+// const testDb = new eventDBModel(eventModel);
+// console.log('testDb', testDb);
+// testDb.save();
+
+router.get(
+  '/test',
+  asyncWrapper(async (req, res) => {
+    const latestEvent = await eventService.findLatest();
+    console.log('latestEvent', latestEvent);
+  }),
+);
 
 router.post(
   '/api/webhook',
@@ -40,7 +66,14 @@ router.post(
       if (event.replyToken === '00000000000000000000000000000000' || event.replyToken === 'ffffffffffffffffffffffffffffffff') {
         return;
       }
-      return await handleEvent(client, event);
+      let eventModel = await eventService.findLatest();
+      if (!eventModel) {
+        eventModel = new eventDBModel();
+      }
+      const eventResult = await handleEvent(client, event, eventModel);
+      console.log('eventModel', eventModel);
+      eventModel.save();
+      return eventResult;
     }))
       .then(() => res.end())
       .catch((err) => {
@@ -50,7 +83,7 @@ router.post(
   })
 );
 
-const handleEvent = async (client, event) => {
+const handleEvent = async (client, event, eventModel) => {
   try {
     const eventType = get(event, 'type');
     const eventMessageType = get(event, ['message', 'type']);
@@ -102,6 +135,11 @@ const handleEvent = async (client, event) => {
         }
       } else if (eventMessageText.includes('/+')) {
         try {
+          // const groupId = get(event, ['source', 'groupId']);
+          // if (groupId) {
+          //   eventService.addGroupId(eventModel, groupId);
+          // }
+
           const profile = await client.getProfile(userId);
           const {
             displayName,
@@ -109,12 +147,17 @@ const handleEvent = async (client, event) => {
             totalPlayer,
             addedCount,
           } = peopleService.addPlayer(eventModel, eventMessageText, profile);
-          return client.replyMessage(event.replyToken, await playerTemplates.addPlayer(displayName, pictureUrl, totalPlayer, addedCount));
+          return client.replyMessage(event.replyToken, playerTemplates.addPlayer(displayName, pictureUrl, totalPlayer, addedCount));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }
       } else if (eventMessageText.includes('/-')) {
         try {
+          // const groupId = get(event, ['source', 'groupId']);
+          // if (groupId) {
+          //   eventService.addGroupId(eventModel, groupId);
+          // }
+          
           const profile = await client.getProfile(userId);
           const {
             displayName, pictureUrl, totalPlayer, removedCount,
@@ -136,7 +179,7 @@ const handleEvent = async (client, event) => {
             return;
           }
           const profile = await client.getProfile(userId);
-          eventModel = new Event();
+          // eventModel = new Event();
           return client.replyMessage(event.replyToken, await errorTemplates.messages(`อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
