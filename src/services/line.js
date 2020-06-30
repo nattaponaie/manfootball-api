@@ -15,4 +15,6 @@ const getUserProfile = async (client, source) => {
   return await client.getProfile(userId);
 };
 
-export default getUserProfile;
+export default {
+  getUserProfile,
+};
