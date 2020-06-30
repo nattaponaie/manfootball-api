@@ -182,7 +182,8 @@ const handleEvent = async (client, event) => {
             eventModel = new eventDBModel();
           }
           const currentPlayers = peopleService.getCurrentPlayers(eventModel);
-          return client.replyMessage(event.replyToken, playerTemplates.allPlayers(currentPlayers));
+          const allPlayersCount = eventModel.people.players.length;
+          return client.replyMessage(event.replyToken, playerTemplates.allPlayers(currentPlayers, allPlayersCount));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }

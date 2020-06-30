@@ -1,4 +1,4 @@
-const allPlayers = (currentPlayers = []) => ({
+const allPlayers = (currentPlayers = [], allPlayersCount = 0) => ({
   'type': 'flex',
   'altText': 'ใครไปบ้าง',
   'contents': {
@@ -63,7 +63,7 @@ const allPlayers = (currentPlayers = []) => ({
         },
         {
           'type': 'text',
-          'text': `รวมทั้งหมด: ${currentPlayers.length} คน`,
+          'text': `รวมทั้งหมด: ${allPlayersCount} คน`,
           'margin': 'md',
         },
       ],
