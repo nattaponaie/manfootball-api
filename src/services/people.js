@@ -1,5 +1,7 @@
 import {
+  get,
   isEmpty,
+  isNil,
 } from 'lodash';
 
 const addPlayer = (eventModel, eventMessageText, profile) => {
@@ -38,6 +40,8 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
       eventModel.people.players.push(userId, displayName, pictureUrl);
     }
   }
+  console.log('eventModel.people.players', eventModel.people.players);
+  
 
   return {
     displayName,
@@ -64,6 +68,8 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
   } = profile;
 
   const currentPlayers = eventModel.people.players;
+  console.log('currentPlayers', currentPlayers);
+  
 
   let number = parseInt(splitedMsg[1]);
   if (isNaN(number)) {
@@ -118,10 +124,13 @@ const getCurrentPlayers = (eventModel) => {
   for(const player of currentPlayers) {
     const foundPlayer = allPlayers.find(ply => ply.userId === player.userId);
     if (!foundPlayer) {
-      player.quantity = 1;
-      allPlayers.push(player);
+      const clonePlayer = {
+        ...player,
+        quantity: 1,
+      };
+      allPlayers.push(clonePlayer);
     } else {
-      if (!foundPlayer.quantity) {
+      if (isNil(get(foundPlayer, 'quantity'))) {
         foundPlayer.quantity = 0;
       }
       foundPlayer.quantity = foundPlayer.quantity + 1;
