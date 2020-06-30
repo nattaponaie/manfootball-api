@@ -179,7 +179,7 @@ const handleEvent = async (client, event, eventModel) => {
             return;
           }
           const profile = await client.getProfile(userId);
-          // eventModel = new Event();
+          eventModel.isCreated = false;
           return client.replyMessage(event.replyToken, await errorTemplates.messages(`อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
