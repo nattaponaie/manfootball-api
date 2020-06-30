@@ -104,6 +104,7 @@ const handleEvent = async (client, event) => {
             time,
             totalPlayers,
           } = eventService.create(eventModel, eventMessageText);
+          eventModel.save();
           return client.replyMessage(event.replyToken, eventTemplates.messages(
             location,
             locationUrl,
@@ -125,12 +126,14 @@ const handleEvent = async (client, event) => {
             time,
             totalPlayers,
           } = eventService.getEventDesc(eventModel);
+          eventModel.save();
           return client.replyMessage(event.replyToken, eventTemplates.messages(
             location,
             locationUrl,
             time,
             totalPlayers
           ));
+          
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
         }
@@ -152,6 +155,7 @@ const handleEvent = async (client, event) => {
             totalPlayer,
             addedCount,
           } = peopleService.addPlayer(eventModel, eventMessageText, profile);
+          eventModel.save();
           return client.replyMessage(event.replyToken, playerTemplates.addPlayer(displayName, pictureUrl, totalPlayer, addedCount));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
@@ -171,6 +175,7 @@ const handleEvent = async (client, event) => {
           const {
             displayName, pictureUrl, totalPlayer, removedCount,
           } = peopleService.removePlayer(eventModel, eventMessageText, profile);
+          eventModel.save();
           return client.replyMessage(event.replyToken, playerTemplates.removePlayer(displayName, pictureUrl, totalPlayer, removedCount));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
@@ -183,6 +188,7 @@ const handleEvent = async (client, event) => {
           }
           const currentPlayers = peopleService.getCurrentPlayers(eventModel);
           const allPlayersCount = eventModel.people.players.length;
+          eventModel.save();
           return client.replyMessage(event.replyToken, playerTemplates.allPlayers(currentPlayers, allPlayersCount));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
@@ -198,6 +204,7 @@ const handleEvent = async (client, event) => {
           }
           const profile = await client.getProfile(userId);
           eventModel.isCreated = false;
+          eventModel.save();
           return client.replyMessage(event.replyToken, await errorTemplates.messages(`อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`));
         } catch (error) {
           return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
