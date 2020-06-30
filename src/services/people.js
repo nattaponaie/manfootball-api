@@ -70,7 +70,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
   const currentPlayers = eventModel.people.players;
   console.log('currentPlayers', currentPlayers);
   
-
+  let removedCount = 1;
   let number = parseInt(splitedMsg[1]);
   if (isNaN(number)) {
     const foundPlayer = currentPlayers.find((ply, index) => {
@@ -91,6 +91,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
     if (number > 20) {
       throw new Error(`${displayName} จะบ้าหรอลบอะไรเยอะแยะ!!`);
     }
+    removedCount = number;
 
     const removedPlayers = currentPlayers.reduce((acc, item) => {
       if (item.userId === userId && number > 0) {
@@ -107,7 +108,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
     displayName,
     pictureUrl,
     totalPlayer: eventModel.people.players.length,
-    removedCount: number,
+    removedCount,
   };
 };
 
