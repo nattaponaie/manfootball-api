@@ -29,7 +29,7 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
   let number = parseInt(splitedMsg[1]);
   if (isNaN(number)) {
     // if isNan then +1 player
-    eventModel.people.players.push(userId, displayName, pictureUrl);
+    eventModel.people.players.push({ userId, displayName, pictureUrl });
     number = 1;
           
   } else {
@@ -37,7 +37,7 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
       throw new Error(`${displayName} จะบ้าหรอบวกอะไรเยอะแยะ!!`);
     }
     for (let i = 1; i <= number; i++) {
-      eventModel.people.players.push(userId, displayName, pictureUrl);
+      eventModel.people.players.push({ userId, displayName, pictureUrl });
     }
   }
   console.log('eventModel.people.players', eventModel.people.players);
