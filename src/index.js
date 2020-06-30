@@ -31,9 +31,6 @@ const LINE_OA_CONFIG = {
 };
 const client = new line.Client(LINE_OA_CONFIG);
 
-// const source = { 'userId': 'U5936b9df5d8cec5678d3115fdbda4724', 'groupId': 'C43218238504b40fc08e8c74e32aed7f2', 'type': 'group' };
-// lineService.getUserProfile(client, source).then(res => console.log(res));
-
 router.post(
   '/api/webhook',
   line.middleware(LINE_OA_CONFIG),
@@ -132,7 +129,6 @@ const handleEvent = async (client, event) => {
           // }
 
           const profile = await lineService.getUserProfile(client, event.source);
-          console.log('profile', profile);
           
           const {
             displayName,

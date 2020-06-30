@@ -40,8 +40,6 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
       eventModel.people.players.push({ userId, displayName, pictureUrl });
     }
   }
-  console.log('eventModel.people.players', eventModel.people.players);
-  
 
   return {
     displayName,
@@ -68,8 +66,6 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
   } = profile;
 
   const currentPlayers = eventModel.people.players;
-  console.log('currentPlayers', currentPlayers);
-  
   let removedCount = 1;
   let number = parseInt(splitedMsg[1]);
   if (isNaN(number)) {
