@@ -196,7 +196,7 @@ const removePlayer = (displayName, profileUrl, totalPlayer, removedCount) => ({
         },
         {
           'type': 'text',
-          'text': `รวมทั้งหมด: ${totalPlayer} คน`,
+          'text': `จำนวนที่เหลือ: ${totalPlayer} คน`,
           'weight': 'bold',
         },
         {
