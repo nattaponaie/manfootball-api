@@ -22,7 +22,7 @@ const create = (eventModel, eventMessageText) => {
   eventModel.location = splitedMsg[1];
   eventModel.time = splitedMsg[2];
   eventModel.isCreated = true;
-  return eventModel.getEventDesc();
+  return getEventDesc(eventModel);
 };
 
 const findLatest = async () => {
