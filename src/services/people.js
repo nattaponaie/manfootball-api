@@ -97,7 +97,8 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
         number = number -1;
         return acc;
       }
-      return acc.push(item);
+      acc.push(item);
+      return acc;
     }, []);
     eventModel.people.players = removedPlayers;
   }
