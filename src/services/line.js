@@ -1,14 +1,15 @@
 import {
   get,
-  isNil,
 } from 'lodash';
 
 const getUserProfile = async (client, source) => {
+  console.log('source', source);
+  
   const userId = get(source, 'userId');
-  if (!isNil(get(source, 'groupId'))) {
+  if (get(source, 'type') === 'group') {
     const profile = await client.getGroupMemberProfile(get(source, 'groupId'), userId);
     return profile;
-  } else if (!isNil(get(source, 'roomId'))) {
+  } else if (get(source, 'type') === 'room') {
     const profile = await client.getRoomMemberProfile(get(source, 'roomId'), userId);
     return profile;
   }
