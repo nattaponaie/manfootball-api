@@ -80,7 +80,10 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
     if (number < 1) {
       throw new Error(`${displayName} ลบเล่นทำไม !!`);
     }
-    // const foundIndexs = [];
+    if (number > 20) {
+      throw new Error(`${displayName} จะบ้าหรอบวกอะไรเยอะแยะ!!`);
+    }
+
     const removedPlayers = currentPlayers.reduce((acc, item) => {
       if (item.userId === userId && number > 0) {
         number = number -1;
@@ -88,14 +91,6 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
       }
       return acc.push(item);
     }, []);
-    
-    // if (foundPlayers.length < number) {
-    //   throw new Error(`นาย ${displayName} ยังบวกไม่ถึง ${number} คน (บวกไปแล้ว ${foundPlayers.length})`);
-    // }
-
-    // for(let i = 0; i <= number; i++) {
-    //   foundPlayers.splice(foundIndexs[i], 1);
-    // }
     eventModel.getPeople().setPlayers(removedPlayers);
   }
 
