@@ -30,7 +30,7 @@ const create = (eventModel, eventMessageText) => {
 
 const findLatest = async () => {
   try {
-    const result = eventDBModel.findOne({}, {}, { sort: { 'createdAt': -1 } });
+    const result = eventDBModel.findOne({ isCreated: true }, {}, { sort: { 'createdAt': -1 } });
     return result;
   } catch (error) {
     throw error;
