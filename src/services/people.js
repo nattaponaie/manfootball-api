@@ -32,6 +32,9 @@ const addPlayer = (eventModel, eventMessageText, profile) => {
     number = 1;
           
   } else {
+    if (number > 20) {
+      throw new Error(`${displayName} จะบ้าหรอบวกอะไรเยอะแยะ!!`);
+    }
     for (let i = 1; i <= number; i++) {
       peopleModel.addPlayer(userId, displayName, pictureUrl);
     }
@@ -81,7 +84,7 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
       throw new Error(`${displayName} ลบเล่นทำไม !!`);
     }
     if (number > 20) {
-      throw new Error(`${displayName} จะบ้าหรอบวกอะไรเยอะแยะ!!`);
+      throw new Error(`${displayName} จะบ้าหรอลบอะไรเยอะแยะ!!`);
     }
 
     const removedPlayers = currentPlayers.reduce((acc, item) => {
