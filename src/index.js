@@ -66,14 +66,7 @@ router.post(
       if (event.replyToken === '00000000000000000000000000000000' || event.replyToken === 'ffffffffffffffffffffffffffffffff') {
         return;
       }
-      let eventModel = await eventService.findLatest();
-      if (!eventModel) {
-        eventModel = new eventDBModel();
-      }
-      const eventResult = await handleEvent(client, event, eventModel);
-      console.log('eventModel', eventModel);
-      eventModel.save();
-      return eventResult;
+      return await handleEvent(client, event);
     }))
       .then(() => res.end())
       .catch((err) => {
@@ -83,7 +76,7 @@ router.post(
   })
 );
 
-const handleEvent = async (client, event, eventModel) => {
+const handleEvent = async (client, event) => {
   try {
     const eventType = get(event, 'type');
     const eventMessageType = get(event, ['message', 'type']);
@@ -101,6 +94,10 @@ const handleEvent = async (client, event, eventModel) => {
         return client.replyMessage(event.replyToken, message);
       } else if (eventMessageText.includes('/สร้าง')) {
         try {
+          let eventModel = await eventService.findLatest();
+          if (!eventModel) {
+            eventModel = new eventDBModel();
+          }
           const {
             location,
             locationUrl,
@@ -118,6 +115,10 @@ const handleEvent = async (client, event, eventModel) => {
         }
       } else if (eventMessageText.includes('/เตะบอล')) {
         try {
+          let eventModel = await eventService.findLatest();
+          if (!eventModel) {
+            eventModel = new eventDBModel();
+          }
           const {
             location,
             locationUrl,
@@ -135,6 +136,10 @@ const handleEvent = async (client, event, eventModel) => {
         }
       } else if (eventMessageText.includes('/+')) {
         try {
+          let eventModel = await eventService.findLatest();
+          if (!eventModel) {
+            eventModel = new eventDBModel();
+          }
           // const groupId = get(event, ['source', 'groupId']);
           // if (groupId) {
           //   eventService.addGroupId(eventModel, groupId);
@@ -153,6 +158,10 @@ const handleEvent = async (client, event, eventModel) => {
         }
       } else if (eventMessageText.includes('/-')) {
         try {
+          let eventModel = await eventService.findLatest();
+          if (!eventModel) {
+            eventModel = new eventDBModel();
+          }
           // const groupId = get(event, ['source', 'groupId']);
           // if (groupId) {
           //   eventService.addGroupId(eventModel, groupId);
@@ -168,6 +177,10 @@ const handleEvent = async (client, event, eventModel) => {
         }
       } else if (eventMessageText.includes('/ใครไปบ้าง')) {
         try {
+          let eventModel = await eventService.findLatest();
+          if (!eventModel) {
+            eventModel = new eventDBModel();
+          }
           const currentPlayers = peopleService.getCurrentPlayers(eventModel);
           return client.replyMessage(event.replyToken, playerTemplates.allPlayers(currentPlayers));
         } catch (error) {
@@ -177,6 +190,10 @@ const handleEvent = async (client, event, eventModel) => {
         try {
           if (userId !== 'U3b611def95ce29fea20ee4f56a9abf2f') {
             return;
+          }
+          let eventModel = await eventService.findLatest();
+          if (!eventModel) {
+            eventModel = new eventDBModel();
           }
           const profile = await client.getProfile(userId);
           eventModel.isCreated = false;
