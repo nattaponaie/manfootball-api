@@ -75,28 +75,29 @@ const removePlayer = (eventModel, eventMessageText, profile) => {
       throw new Error(`หื้มม ${displayName} ยังไม่เคยบวกเลย`);
     }
     number = 1;
+    eventModel.getPeople().setPlayers(currentPlayers);
   } else {
     if (number < 1) {
       throw new Error(`${displayName} ลบเล่นทำไม !!`);
     }
-    const foundIndexs = [];
-    const foundPlayers = currentPlayers.filter((ply, index) => {
-      if (ply.userId === userId) {
-        foundIndexs.push(index);
-        return ply;
+    // const foundIndexs = [];
+    const removedPlayers = currentPlayers.reduce((acc, item) => {
+      if (item.userId === userId && number > 0) {
+        number = number -1;
+        return acc;
       }
-    });
+      return acc.push(item);
+    }, []);
     
-    if (foundPlayers.length < number) {
-      throw new Error(`นาย ${displayName} ยังบวกไม่ถึง ${number} คน (บวกไปแล้ว ${foundPlayers.length})`);
-    }
+    // if (foundPlayers.length < number) {
+    //   throw new Error(`นาย ${displayName} ยังบวกไม่ถึง ${number} คน (บวกไปแล้ว ${foundPlayers.length})`);
+    // }
 
-    for(let i = 0; i < number; i++) {
-      currentPlayers.splice(foundIndexs[i], 1);
-    }
+    // for(let i = 0; i <= number; i++) {
+    //   foundPlayers.splice(foundIndexs[i], 1);
+    // }
+    eventModel.getPeople().setPlayers(removedPlayers);
   }
-
-  eventModel.getPeople().setPlayers(currentPlayers);
 
   return {
     displayName,
