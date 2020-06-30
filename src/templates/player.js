@@ -63,7 +63,7 @@ const allPlayers = (currentPlayers = []) => ({
         },
         {
           'type': 'text',
-          'text': 'รวมทั้งหมด: 20 คน',
+          'text': `รวมทั้งหมด: ${currentPlayers.length} คน`,
           'margin': 'md',
         },
       ],
