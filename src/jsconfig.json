@@ -5,7 +5,9 @@
       "utils/*": ["utils/*"],
       "middleware/*": ["middleware/*"],
       "templates/*": ["templates/*"],
-      "models/*": ["models/*"]
+      "models/*": ["models/*"],
+      "services/*": ["services/*"],
+      "database/*": ["database/*"]
     }
   }
 }

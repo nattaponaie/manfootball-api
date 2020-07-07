@@ -1,6 +1,9 @@
 const commandList = [
   { cmd: '/สร้าง', description: 'ตัวอย่าง: /สร้าง (สถานที่) (เวลา)' },
-  { cmd: '/+', description: 'ตัวอย่าง: /+1, /+2' },
+  { cmd: '/เตะบอล', description: 'รายละเอียด' },
+  { cmd: '/+', description: 'ตัวอย่าง: /+, /+1, /+2' },
+  { cmd: '/-', description: 'ตัวอย่าง: /-, /-1, /-2' },
+  { cmd: '/ใครไปบ้าง', description: 'ดูซิว่าใครไปบ้าง' },
 ];
 
 const messages = async () => ({
@@ -10,7 +13,7 @@ const messages = async () => ({
     'type': 'bubble',
     'hero': {
       'type': 'image',
-      'url': 'https://www.worcester.gov.uk/images/easyblog_shared/2019/b2ap3_amp_Football---carousel.jpg',
+      'url': 'https://f.ptcdn.info/741/018/000/1399631024-1397983933-o.jpg',
       'size': 'full',
       'aspectRatio': '20:13',
       'aspectMode': 'cover',
@@ -53,33 +56,6 @@ const messages = async () => ({
             },
           ],
         })),
-        // {
-        //   'type': 'box',
-        //   'layout': 'vertical',
-        //   'spacing': 'sm',
-        //   'contents': [
-        //     {
-        //       'type': 'box',
-        //       'layout': 'vertical',
-        //       'contents': [
-        //         {
-        //           'type': 'text',
-        //           'text': '1. /สร้าง',
-        //           'flex': 0,
-        //           'margin': 'sm',
-        //           'weight': 'bold',
-        //         },
-        //         {
-        //           'type': 'text',
-        //           'text': 'ตัวอย่าง: /สร้าง (สถานที่) (เวลา)',
-        //           'size': 'xs',
-        //           'align': 'start',
-        //           'color': '#AAAAAA',
-        //         },
-        //       ],
-        //     },
-        //   ],
-        // },
       ],
     },
   },

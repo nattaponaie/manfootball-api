@@ -1,9 +1,11 @@
+const Dotenv = require('dotenv-webpack');
 const webpack = require('webpack');
 const path = require('path');
 const NodemonPlugin = require('nodemon-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 
 const plugins = [
+  new Dotenv(),
   new webpack.NamedModulesPlugin(),
   new NodemonPlugin(),
   new webpack.HotModuleReplacementPlugin(),

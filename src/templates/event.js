@@ -1,11 +1,11 @@
-const messages = (locationName, locationUrl, time) => ({
+const messages = (locationName, locationUrl, time, totalPlayers = 0) => ({
   'type': 'flex',
   'altText': 'เตะบอล',
   'contents': {
     'type': 'bubble',
     'hero': {
       'type': 'image',
-      'url': 'https://www.worcester.gov.uk/images/easyblog_shared/2019/b2ap3_amp_Football---carousel.jpg',
+      'url': 'https://f.ptcdn.info/741/018/000/1399631024-1397983933-o.jpg',
       'size': 'full',
       'aspectRatio': '20:13',
       'aspectMode': 'cover',
@@ -14,11 +14,6 @@ const messages = (locationName, locationUrl, time) => ({
       'type': 'box',
       'layout': 'vertical',
       'spacing': 'md',
-      'action': {
-        'type': 'uri',
-        'label': 'Action',
-        'uri': 'https://linecorp.com',
-      },
       'contents': [
         {
           'type': 'text',
@@ -68,6 +63,21 @@ const messages = (locationName, locationUrl, time) => ({
                   'weight': 'bold',
                 },
               ],
+            },
+            {
+              'type': 'box',
+              'layout': 'vertical',
+              'contents': [
+                {
+                  'type': 'text',
+                  'text': `จำนวน: ${totalPlayers} คน`,
+                  'weight': 'bold',
+                },
+              ],
+            },
+            {
+              'type': 'text',
+              'text': 'พิมพ์ /+1 เพื่อบวก',
             },
           ],
         },

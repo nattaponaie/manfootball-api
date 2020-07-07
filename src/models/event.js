@@ -1,10 +1,27 @@
+import People from 'models/people';
+
 class Event {
+  constructor() {
+    this.people = new People();
+    this.isCreated = false;
+    this.groupIdList = [];
+  }
+
   getEventDesc() {
     return {
-      location: this.location,
-      locationUrl: this.locationUrl,
-      time: this.time,
+      location: this.location || 'ไม่มี',
+      locationUrl: this.locationUrl || 'ไม่มี',
+      time: this.time || 'ไม่มี',
+      totalPlayers: this.people.getTotalPlayer() || 0,
     };
+  }
+
+  getGroupIdList() {
+    return this.groupIdList;
+  }
+
+  getIsCreated() {
+    return this.isCreated;
   }
 
   getLocation() {
@@ -15,8 +32,16 @@ class Event {
     return this.locationUrl;
   }
 
+  getPeople() {
+    return this.people;
+  }
+
   getTime() {
     return this.time;
+  }
+
+  setGroupIdList(groupId) {
+    this.groupIdList = groupId;
   }
 
   setLocation(location) {
@@ -26,8 +51,16 @@ class Event {
     }
   }
 
+  setLocationUrl(locationUrl) {
+    this.locationUrl = locationUrl;
+  }
+
   setTime(time) {
     this.time = time;
+  }
+
+  setIsCreated(flag) {
+    this.isCreated = flag;
   }
 }
 
