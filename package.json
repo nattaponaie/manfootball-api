@@ -10,6 +10,9 @@
     "start:dev": "NODE_ENV=development && webpack --watch",
     "start": "node ./dist/src/index.js"
   },
+  "engines": {
+    "node": "10.21.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nattaponaie/manfootball-linebot.git"
