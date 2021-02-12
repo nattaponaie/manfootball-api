@@ -19,35 +19,50 @@ import { logError, logInfo } from 'utils/logger';
 
 const app = express();
 
-mongoose.connect(`mongodb+srv://${process.env.DB_PROJECT_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_PROJECT_NAME}?retryWrites=true&w=majority`, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => logInfo('Connect to MongoDB successfully')).catch((error) => logError('Error connection with MongoDB', error));
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_PROJECT_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_PROJECT_NAME}?retryWrites=true&w=majority`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => logInfo('Connect to MongoDB successfully'))
+  .catch((error) => logError('Error connection with MongoDB', error));
 
 const router = express.Router();
+
 const LINE_OA_CONFIG = {
   channelAccessToken: process.env.LINE_OA_CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.LINE_OA_CHANNEL_SECRET,
 };
 const client = new line.Client(LINE_OA_CONFIG);
 
+import userController from '../src/controllers/users/controller';
+
+app.use(userController);
+
 router.post(
   '/api/webhook',
   line.middleware(LINE_OA_CONFIG),
   asyncWrapper(async (req, res) => {
     logInfo(req.body.events);
-  
+
     // req.body.events should be an array of events
     if (!Array.isArray(req.body.events)) {
       return res.status(500).end();
     }
     // handle events separately
-    await Promise.all(req.body.events.map(async event => {
-      if (event.replyToken === '00000000000000000000000000000000' || event.replyToken === 'ffffffffffffffffffffffffffffffff') {
-        return;
-      }
-      return await handleEvent(client, event);
-    }))
+    await Promise.all(
+      req.body.events.map(async (event) => {
+        if (
+          event.replyToken === '00000000000000000000000000000000' || event.replyToken === 'ffffffffffffffffffffffffffffffff'
+        ) {
+          return;
+        }
+        return await handleEvent(client, event);
+      })
+    )
       .then(() => res.end())
       .catch((err) => {
         logError('webhook', err);
@@ -64,7 +79,7 @@ const handleEvent = async (client, event) => {
       // ignore non-text-message event
       return Promise.resolve(null);
     }
-  
+
     if (eventType === 'message' && eventMessageType === 'text') {
       const eventMessageText = get(event, ['message', 'text']);
       const userId = event.source.userId;
@@ -85,14 +100,15 @@ const handleEvent = async (client, event) => {
             totalPlayers,
           } = eventService.create(eventModel, eventMessageText);
           eventModel.save();
-          return client.replyMessage(event.replyToken, eventTemplates.messages(
-            location,
-            locationUrl,
-            time,
-            totalPlayers,
-          ));
+          return client.replyMessage(
+            event.replyToken,
+            eventTemplates.messages(location, locationUrl, time, totalPlayers)
+          );
         } catch (error) {
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(error.message)
+          );
         }
       } else if (eventMessageText.includes('/เตะบอล')) {
         try {
@@ -107,15 +123,15 @@ const handleEvent = async (client, event) => {
             totalPlayers,
           } = eventService.getEventDesc(eventModel);
           eventModel.save();
-          return client.replyMessage(event.replyToken, eventTemplates.messages(
-            location,
-            locationUrl,
-            time,
-            totalPlayers
-          ));
-          
+          return client.replyMessage(
+            event.replyToken,
+            eventTemplates.messages(location, locationUrl, time, totalPlayers)
+          );
         } catch (error) {
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(error.message)
+          );
         }
       } else if (eventMessageText.includes('/+')) {
         try {
@@ -128,8 +144,11 @@ const handleEvent = async (client, event) => {
           //   eventService.addGroupId(eventModel, groupId);
           // }
 
-          const profile = await lineService.getUserProfile(client, event.source);
-          
+          const profile = await lineService.getUserProfile(
+            client,
+            event.source
+          );
+
           const {
             displayName,
             pictureUrl,
@@ -137,9 +156,20 @@ const handleEvent = async (client, event) => {
             addedCount,
           } = peopleService.addPlayer(eventModel, eventMessageText, profile);
           eventModel.save();
-          return client.replyMessage(event.replyToken, playerTemplates.addPlayer(displayName, pictureUrl, totalPlayer, addedCount));
+          return client.replyMessage(
+            event.replyToken,
+            playerTemplates.addPlayer(
+              displayName,
+              pictureUrl,
+              totalPlayer,
+              addedCount
+            )
+          );
         } catch (error) {
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(error.message)
+          );
         }
       } else if (eventMessageText.includes('/-')) {
         try {
@@ -151,15 +181,32 @@ const handleEvent = async (client, event) => {
           // if (groupId) {
           //   eventService.addGroupId(eventModel, groupId);
           // }
-          
-          const profile = await lineService.getUserProfile(client, event.source);
+
+          const profile = await lineService.getUserProfile(
+            client,
+            event.source
+          );
           const {
-            displayName, pictureUrl, totalPlayer, removedCount,
+            displayName,
+            pictureUrl,
+            totalPlayer,
+            removedCount,
           } = peopleService.removePlayer(eventModel, eventMessageText, profile);
           eventModel.save();
-          return client.replyMessage(event.replyToken, playerTemplates.removePlayer(displayName, pictureUrl, totalPlayer, removedCount));
+          return client.replyMessage(
+            event.replyToken,
+            playerTemplates.removePlayer(
+              displayName,
+              pictureUrl,
+              totalPlayer,
+              removedCount
+            )
+          );
         } catch (error) {
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(error.message)
+          );
         }
       } else if (eventMessageText.includes('/ใครไปบ้าง')) {
         try {
@@ -170,9 +217,15 @@ const handleEvent = async (client, event) => {
           const currentPlayers = peopleService.getCurrentPlayers(eventModel);
           const allPlayersCount = eventModel.people.players.length;
           eventModel.save();
-          return client.replyMessage(event.replyToken, playerTemplates.allPlayers(currentPlayers, allPlayersCount));
+          return client.replyMessage(
+            event.replyToken,
+            playerTemplates.allPlayers(currentPlayers, allPlayersCount)
+          );
         } catch (error) {
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(error.message)
+          );
         }
       } else if (eventMessageText.includes('/ยกเลิก')) {
         try {
@@ -183,12 +236,23 @@ const handleEvent = async (client, event) => {
           if (!eventModel) {
             eventModel = new eventDBModel();
           }
-          const profile = await lineService.getUserProfile(client, event.source);
+          const profile = await lineService.getUserProfile(
+            client,
+            event.source
+          );
           eventModel.isCreated = false;
           eventModel.save();
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(`อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(
+              `อีเว้นท์ถูกยกเลิกโดย ${profile.displayName}`
+            )
+          );
         } catch (error) {
-          return client.replyMessage(event.replyToken, await errorTemplates.messages(error.message));
+          return client.replyMessage(
+            event.replyToken,
+            await errorTemplates.messages(error.message)
+          );
         }
       }
     }
@@ -203,3 +267,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   logInfo(`🍺  Ready ... ${PORT}`);
 });
+
+export { client, LINE_OA_CONFIG };
