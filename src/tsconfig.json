@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "utils/*": ["utils/*"],
+      "middleware/*": ["middleware/*"],
+      "templates/*": ["templates/*"],
+      "models/*": ["models/*"],
+      "services/*": ["services/*"],
+      "database/*": ["database/*"]
+    },
+    "module": "commonjs",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+  }
+}
