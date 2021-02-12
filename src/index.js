@@ -19,7 +19,7 @@ import { logError, logInfo } from 'utils/logger';
 
 const app = express();
 
-mongoose.connect(`mongodb+srv://manman-football-prod:${process.env.DB_PASSWORD}@manman-football.tsoky.mongodb.net/manman-db?retryWrites=true&w=majority`, {
+mongoose.connect(`mongodb+srv://${process.env.DB_PROJECT_NAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_PROJECT_NAME}?retryWrites=true&w=majority`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => logInfo('Connect to MongoDB successfully')).catch((error) => logError('Error connection with MongoDB', error));
