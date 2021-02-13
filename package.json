@@ -34,6 +34,7 @@
     "lodash": "^4.17.19",
     "mongoose": "^5.9.20",
     "ts-node": "^9.1.1",
+    "uuid": "^8.3.2",
     "webpack": "^4.42.0",
     "webpack-dev-middleware": "^3.7.2",
     "winston": "^3.2.1"

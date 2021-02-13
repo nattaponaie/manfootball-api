@@ -93,17 +93,18 @@ const handleEvent = async (lineClient, event) => {
         return lineClient.replyMessage(event.replyToken, message);
       } else if (eventMessageText.includes('/สร้าง')) {
         try {
-          let eventModel = await eventService.findLatest();
-          if (!eventModel) {
-            eventModel = new eventDBModel();
-          }
+          const eventMessageSource = get(event, 'source');
+          
+          // let eventModel = await eventService.findLatest();
+          // if (!eventModel) {
+          //   eventModel = new eventDBModel();
+          // }
           const {
             location,
             locationUrl,
             time,
             totalPlayers,
-          } = eventService.create(eventModel, eventMessageText);
-          eventModel.save();
+          } = await eventService.create(eventMessageSource, eventMessageText);
           return lineClient.replyMessage(
             event.replyToken,
             eventTemplates.messages(location, locationUrl, time, totalPlayers)
