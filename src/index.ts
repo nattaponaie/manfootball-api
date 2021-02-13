@@ -38,9 +38,13 @@ const LINE_OA_CONFIG = {
 };
 const lineClient = new line.Client(LINE_OA_CONFIG);
 
-import userController from '../src/controllers/users/controller';
+import { supportApis, defaultApi } from 'controllers';
 
-app.use(userController);
+// Register API routes
+supportApis.forEach((api) => {
+  app.use(`/api/${api.version}`, api.router);
+});
+app.use('/api', defaultApi.router);
 
 router.post(
   '/api/webhook',

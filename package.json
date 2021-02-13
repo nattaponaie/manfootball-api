@@ -9,7 +9,7 @@
     "heroku-postbuild": "yarn build",
     "start:dev": "NODE_ENV=development && webpack --watch",
     "start": "node ./dist/main.js",
-    "lint": "tslint 'src/**/*.{ts}'"
+    "lint": "eslint ."
   },
   "engines": {
     "node": "12.18.4"
@@ -45,6 +45,8 @@
     "@babel/preset-env": "^7.8.7",
     "@babel/register": "^7.8.6",
     "@types/express": "^4.17.11",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",

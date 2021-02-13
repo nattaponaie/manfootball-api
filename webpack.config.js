@@ -50,6 +50,7 @@ module.exports = {
     extensions: ['.webpack-loader.js', '.web-loader.js', '.loader.js', '.js', '.jsx', '.ts'],
     modules: ['node_modules'],
     alias: {
+      'controllers': path.resolve('./src/controllers'),
       'utils': path.resolve('./src/utils'),
       'middleware': path.resolve('./src/middleware'),
       'templates': path.resolve('./src/templates'),
