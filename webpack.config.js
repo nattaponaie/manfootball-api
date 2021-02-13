@@ -59,8 +59,7 @@ module.exports = {
     },
   },
   module: {
-    rules: [
-      {
+    rules: [{
         test: /\.(js|jsx)$/,
         loader: 'babel-loader',
         options: {
@@ -88,4 +87,3 @@ module.exports = {
     __dirname: true,
   },
 };
-

@@ -3,5 +3,5 @@ declare const LINE_OA_CONFIG: {
     channelAccessToken: string;
     channelSecret: string;
 };
-declare const client: line.Client;
-export { client, LINE_OA_CONFIG };
+declare const lineClient: line.Client;
+export { lineClient, LINE_OA_CONFIG };

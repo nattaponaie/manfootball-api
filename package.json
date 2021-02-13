@@ -2,13 +2,13 @@
   "name": "manfootball-linebot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "main.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "yarn clean && yarn babel src -D -d dist/src",
+    "build": "yarn clean && NODE_ENV=production && webpack",
     "heroku-postbuild": "yarn build",
     "start:dev": "NODE_ENV=development && webpack --watch",
-    "start": "node ./dist/src/index.ts"
+    "start": "node ./dist/main.js"
   },
   "engines": {
     "node": "12.18.4"
