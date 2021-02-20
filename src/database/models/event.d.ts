@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { PlayerType } from 'models/player';
 export interface IEvent extends Document {
     players: PlayerType[];
@@ -9,6 +9,7 @@ export interface IEvent extends Document {
     locationUrl: string;
     time: string;
     id: string;
+    save: () => void;
 }
 export declare type EventDescType = {
     location: string;
@@ -16,5 +17,5 @@ export declare type EventDescType = {
     time: string;
     totalPlayers: number;
 };
-declare const _default: any;
-export default _default;
+declare const Event: Model<IEvent>;
+export default Event;

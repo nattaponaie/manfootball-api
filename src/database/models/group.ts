@@ -1,17 +1,19 @@
-import mongoose, { Document } from 'mongoose';
+import { Document, Schema, model, Model } from 'mongoose';
 
 export interface IGroup extends Document {
   id: string;
-  isCreated: boolean;
+  hasEvent: boolean;
   eventId: string;
+  time: string;
+  save: () => void;
 }
 
-const Schema: IGroup = new mongoose.Schema({
+const GroupSchema: IGroup = new Schema({
   id: {
     type: String,
     default: ''
   },
-  isCreated: {
+  hasEvent: {
     type: Boolean,
     default: false
   },
@@ -28,4 +30,5 @@ const Schema: IGroup = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.model<IGroup>('Group', Schema);
+const Group: Model<IGroup> = model('Group', GroupSchema);
+export default Group;

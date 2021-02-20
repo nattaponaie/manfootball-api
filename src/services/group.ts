@@ -1,22 +1,16 @@
-import mongoose from 'mongoose';
-
 import groupDBModel, { IGroup } from 'database/models/group';
 
-const findOrCreate = async (groupId: string): Promise<mongoose.model<IGroup>> => {
+const findOrCreate = async (groupId: string): Promise<IGroup> => {
   let model = await findLatest(groupId);
-  console.log('model0', model);
   if (model) {
     return model;
   }
 
   model = new groupDBModel();
   model.id = groupId;
-  console.log('model', model);
-  
-  return model;
 };
 
-const findLatest = async (id: string) => groupDBModel.findOne({
+const findLatest = async (id: string): Promise<IGroup> => groupDBModel.findOne({
   id
 }, {}, {
   sort: {
@@ -24,6 +18,14 @@ const findLatest = async (id: string) => groupDBModel.findOne({
   }
 });
 
+const findOneByGroupId = async (groupId: string): Promise<IGroup> => groupDBModel.findOne({
+  id: groupId
+}, {}, {});
+
+const findOneAndUpdate = async (filter, update): Promise<IGroup> => groupDBModel.findOneAndUpdate(filter, update);
+
 export default {
-  findOrCreate
+  findOrCreate,
+  findOneByGroupId,
+  findOneAndUpdate
 };

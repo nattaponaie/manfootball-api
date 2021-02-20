@@ -1,8 +1,10 @@
-import { Document } from 'mongoose';
+import { Document, Model } from 'mongoose';
 export interface IGroup extends Document {
     id: string;
-    isCreated: boolean;
+    hasEvent: boolean;
     eventId: string;
+    time: string;
+    save: () => void;
 }
-declare const _default: any;
-export default _default;
+declare const Group: Model<IGroup>;
+export default Group;

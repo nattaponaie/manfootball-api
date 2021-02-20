@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import { Document, Schema, model, Model } from 'mongoose';
 
 import { PlayerType } from 'models/player';
 
@@ -11,6 +11,7 @@ export interface IEvent extends Document {
   locationUrl: string;
   time: string;
   id: string;
+  save: () => void;
 }
 
 export type EventDescType = {
@@ -20,7 +21,7 @@ export type EventDescType = {
   totalPlayers: number;
 }
 
-const Schema: IEvent = new mongoose.Schema({
+const EventSchema: IEvent = new Schema({
   players: {
     type: Array,
     default: []
@@ -58,4 +59,5 @@ const Schema: IEvent = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.model<IEvent>('Event', Schema);
+const Event: Model<IEvent> = model('Event', EventSchema);
+export default Event;
