@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { isNil, isEmpty, get } from 'lodash';
 
 import eventDBModel from 'database/models/event';
 import { IPlayer } from 'database/models/player';
@@ -17,6 +18,51 @@ import { getGroupId } from 'utils/line-message';
 //     eventModel.setGroupIdList(currentGroupIds);
 //   }
 // };
+
+const getAddPlayerInputNumber = (eventMessageText) => {
+  const splitedMsg = eventMessageText.split('/+');
+  if (splitedMsg.length !== 2) {
+    throw new Error('ฟอร์แมตผิด (/+ หรือ /+1)');
+  }
+
+  const number = parseInt(splitedMsg[1]);
+
+  return isNaN(number) ? 1 : number;
+};
+
+const getRemovePlayerInputNumber = (eventMessageText) => {
+  const splitedMsg = eventMessageText.split('/-');
+  if (splitedMsg.length !== 2) {
+    throw new Error('ฟอร์แมตผิด (/- หรือ /-1)');
+  }
+
+  const number = parseInt(splitedMsg[1]);
+
+  return isNaN(number) ? 1 : number;
+};
+
+const addPlayer = async (eventMessageSource, eventMessageText, profile, player: IPlayer): Promise<IEvent> => {
+  const event = await getCurrentEvent(eventMessageSource);
+  if (!event || !event.isCreated) {
+    throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
+  }
+
+  const number = getAddPlayerInputNumber(eventMessageText);
+
+  if (number > 20) {
+    const {
+      displayName,
+    } = profile;
+    throw new Error(`${displayName} จะบ้าหรอบวกอะไรเยอะแยะ!!`);
+  }
+
+  for (let i = 1; i <= number; i++) {
+    event.players.push(player);
+  }
+
+  event.save();
+  return event;
+};
 
 const create = async (eventMessageSource, eventMessageText, player: IPlayer): Promise<EventDescType> => {
   const splitedMsg = eventMessageText.split(' ');
@@ -39,9 +85,12 @@ const create = async (eventMessageSource, eventMessageText, player: IPlayer): Pr
 
   const eventModel = new eventDBModel();
   eventModel.location = splitedMsg[1];
-  if (eventModel.location === 'บอย' || eventModel.location === 'บอยท่าพระจันทร์') {
-    eventModel.locationUrl = 'https://www.google.com/maps/dir/13.6655812,100.2712304/%E0%B8%AA%E0%B8%99%E0%B8%B2%E0%B8%A1%E0%B8%9F%E0%B8%B8%E0%B8%95%E0%B8%9A%E0%B8%AD%E0%B8%A5+%E0%B8%9A%E0%B8%AD%E0%B8%A2+%E0%B8%97%E0%B9%88%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%88%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C+FC+230+Thanon+Utthayan,+Thawi+Watthana,+Bangkok+10170/@13.7299381,100.2474323,12z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x30e296b031be5a9f:0x4cd1f3d397e96cb5!2m2!1d100.3541667!2d13.7769444';
-  }
+
+  // eslint-disable-next-line no-warning-comments
+  // TODO: implement location feature
+  const defaultLocationUrl = 'https://www.google.com/maps/dir/13.6655812,100.2712304/%E0%B8%AA%E0%B8%99%E0%B8%B2%E0%B8%A1%E0%B8%9F%E0%B8%B8%E0%B8%95%E0%B8%9A%E0%B8%AD%E0%B8%A5+%E0%B8%9A%E0%B8%AD%E0%B8%A2+%E0%B8%97%E0%B9%88%E0%B8%B2%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%88%E0%B8%B1%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C+FC+230+Thanon+Utthayan,+Thawi+Watthana,+Bangkok+10170/@13.7299381,100.2474323,12z/data=!3m1!4b1!4m9!4m8!1m1!4e1!1m5!1m1!1s0x30e296b031be5a9f:0x4cd1f3d397e96cb5!2m2!1d100.3541667!2d13.7769444';
+  eventModel.locationUrl = defaultLocationUrl;
+  
   eventModel.time = splitedMsg[2];
 
   eventModel.id = uuidv4();
@@ -65,11 +114,6 @@ const findLatest = async (): Promise<IEvent> => eventDBModel.findOne({
 const findOneByGroupId = async (groupId: string): Promise<IEvent> => eventDBModel.findOne({
   isCreated: true,
   groups: groupId
-}, {}, {});
-
-const findOneByOwner = async (owner: IPlayer): Promise<IEvent> => eventDBModel.findOne({
-  isCreated: true,
-  owner: owner
 }, {}, {});
 
 const getEventDesc = (eventModel) => {
@@ -120,11 +164,107 @@ const cancelEvent = async (userId: string, eventMessageSource) => {
   event.save();
 };
 
+const getCurrentEventPlayers = async (eventMessageSource): Promise<Array<IPlayer>> => {
+  const event = await getCurrentEvent(eventMessageSource);
+  if (!event) {
+    throw new Error('ยังไม่มีใครสร้างอีเว้นท์เล้ย');
+  }
+  
+  const currentPlayers = event.players;
+  if (currentPlayers.length === 0) {
+    throw new Error('ยังไม่มีคนบวกเลย :(');
+  }
+
+  const allPlayers = [];
+  for(const player of currentPlayers) {
+    const foundPlayer = allPlayers.find(ply => ply.userId === player.userId);
+    if (!foundPlayer) {
+      const clonePlayer = {
+        ...player,
+        quantity: 1,
+      };
+      allPlayers.push(clonePlayer);
+    } else {
+      if (isNil(get(foundPlayer, 'quantity'))) {
+        foundPlayer.quantity = 0;
+      }
+      foundPlayer.quantity = foundPlayer.quantity + 1;
+    }
+  }
+  return allPlayers;
+};
+
+const getCurrentEventPlayerCount = async (eventMessageSource): Promise<number> => {
+  const event = await getCurrentEvent(eventMessageSource);
+  if (!event) {
+    throw new Error('ยังไม่มีใครสร้างอีเว้นท์เล้ย');
+  }
+  return event.players.length || 0;
+};
+
+const removePlayer = async (eventMessageSource, eventMessageText, profile): Promise<IEvent> => {
+  const event = await getCurrentEvent(eventMessageSource);
+  if (!event || !event.isCreated) {
+    throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
+  }
+
+  const {
+    displayName,
+    userId,
+  } = profile;
+
+  const currentPlayers = event.players;
+  let number = getRemovePlayerInputNumber(eventMessageText);
+
+  if (number === 1) {
+    const foundPlayer = currentPlayers.find((ply, index) => {
+      if (ply.userId === userId) {
+        currentPlayers.splice(index, 1);
+        return ply;
+      }
+    });
+    if (isEmpty(foundPlayer)) {
+      throw new Error(`หื้มม ${displayName} ยังไม่เคยบวกเลย`);
+    }
+    event.players = currentPlayers;
+  } else {
+    if (number < 1) {
+      throw new Error(`${displayName} ลบเล่นทำไม !!`);
+    }
+    if (number > 20) {
+      throw new Error(`${displayName} จะบ้าหรอลบอะไรเยอะแยะ!!`);
+    }
+
+    const removedPlayers = currentPlayers.reduce((acc, item) => {
+      if (item.userId === userId && number > 0) {
+        number = number -1;
+        return acc;
+      }
+      acc.push(item);
+      return acc;
+    }, []);
+
+    if (isEmpty(removedPlayers)) {
+      throw new Error(`หื้มม ${displayName} ยังไม่เคยบวกเลย`);
+    }
+    event.players = removedPlayers;
+  }
+
+  event.save();
+  return event;
+};
+
 export default {
   // addGroupId,
+  addPlayer,
   cancelEvent,
   create,
   findLatest,
+  getAddPlayerInputNumber,
   getEventDesc,
   getCurrentEvent,
+  getCurrentEventPlayers,
+  getCurrentEventPlayerCount,
+  getRemovePlayerInputNumber,
+  removePlayer,
 };

@@ -1,22 +1,15 @@
 import groupDBModel, { IGroup } from 'database/models/group';
 
 const findOrCreate = async (groupId: string): Promise<IGroup> => {
-  let model = await findLatest(groupId);
+  let model = await findOneByGroupId(groupId);
   if (model) {
     return model;
   }
 
   model = new groupDBModel();
   model.id = groupId;
+  return model;
 };
-
-const findLatest = async (id: string): Promise<IGroup> => groupDBModel.findOne({
-  id
-}, {}, {
-  sort: {
-    'createdAt': -1
-  }
-});
 
 const findOneByGroupId = async (groupId: string): Promise<IGroup> => groupDBModel.findOne({
   id: groupId

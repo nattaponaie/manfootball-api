@@ -4,7 +4,20 @@ import playerDBModel, { IPlayer } from 'database/models/player';
 import lineService from 'services/line';
 import { lineClient } from '../index';
 
-import { getUserId } from 'utils/line-message';
+import { getGroupId, getUserId } from 'utils/line-message';
+
+const assignMissingGroupId = async (eventMessageSource): Promise<IPlayer> => {
+  const groupId = getGroupId(eventMessageSource);
+
+  const player = await findOrCreate(eventMessageSource);
+
+  const playerSet = new Set(player.groups);
+  playerSet.add(groupId);
+
+  player.groups = Array.from(playerSet);
+  player.save();
+  return player;
+};
 
 const findOrCreate = async (eventMessageSource): Promise<IPlayer> => {
   const userId = getUserId(eventMessageSource);
@@ -36,12 +49,8 @@ const findOneByUserId = async (userId: string): Promise<IPlayer> => playerDBMode
   userId: userId
 }, {}, {});
 
-const validateGroupPermission = async () => {
-
-};
-
 export default {
+  assignMissingGroupId,
   findOrCreate,
   findOneByUserId,
-  validateGroupPermission,
 };

@@ -1,12 +1,12 @@
 import { Document, Schema, model, Model } from 'mongoose';
 
-import { PlayerType } from 'models/player';
+import { IPlayer } from 'database/models/player';
 
 export interface IEvent extends Document {
-  players: PlayerType[];
+  players: IPlayer[];
   isCreated: boolean;
   groups: string[];
-  owner: PlayerType;
+  owner: IPlayer;
   location: string;
   locationUrl: string;
   time: string;
