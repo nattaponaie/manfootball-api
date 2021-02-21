@@ -11,6 +11,7 @@ export interface IEvent extends Document {
   locationUrl: string;
   time: string;
   id: string;
+  limitPlayers: number;
   save: () => void;
 }
 
@@ -53,6 +54,10 @@ const EventSchema: IEvent = new Schema({
   id: {
     type: String,
     default: ''
+  },
+  limitPlayers: {
+    type: Number,
+    default: 0
   },
 }, {
   collection: 'Event',

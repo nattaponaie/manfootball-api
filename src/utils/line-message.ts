@@ -1,6 +1,7 @@
 import { get } from 'lodash';
+import { EventSource } from '@line/bot-sdk';
 
-export const getGroupId = (eventMessageSource): string => {
+export const getGroupId = (eventMessageSource: EventSource): string => {
   const messageSourceType = get(eventMessageSource, 'type');
   if (!messageSourceType) {
     return;
@@ -20,7 +21,7 @@ export enum MessageSourceType {
   Group,
   Room,
 }
-export const getMessageSourceType = (eventMessageSource): MessageSourceType => {
+export const getMessageSourceType = (eventMessageSource: EventSource): MessageSourceType => {
   const messageSourceType = get(eventMessageSource, 'type');
   if (!messageSourceType) {
     return;
@@ -38,4 +39,4 @@ export const getMessageSourceType = (eventMessageSource): MessageSourceType => {
   }
 };
 
-export const getUserId = (eventMessageSource): string => get(eventMessageSource, 'userId');
+export const getUserId = (eventMessageSource: EventSource): string => get(eventMessageSource, 'userId');

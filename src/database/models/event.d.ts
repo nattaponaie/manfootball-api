@@ -9,6 +9,7 @@ export interface IEvent extends Document {
     locationUrl: string;
     time: string;
     id: string;
+    limitPlayers: number;
     save: () => void;
 }
 export declare type EventDescType = {

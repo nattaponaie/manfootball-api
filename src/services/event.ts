@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { isNil, isEmpty, get } from 'lodash';
+import { EventSource, Profile } from '@line/bot-sdk';
 
 import eventDBModel from 'database/models/event';
 import { IPlayer } from 'database/models/player';
@@ -19,7 +20,7 @@ import { getGroupId } from 'utils/line-message';
 //   }
 // };
 
-const getAddPlayerInputNumber = (eventMessageText) => {
+const getAddPlayerInputNumber = (eventMessageText: string): number => {
   const splitedMsg = eventMessageText.split('/+');
   if (splitedMsg.length !== 2) {
     throw new Error('ฟอร์แมตผิด (/+ หรือ /+1)');
@@ -30,7 +31,7 @@ const getAddPlayerInputNumber = (eventMessageText) => {
   return isNaN(number) ? 1 : number;
 };
 
-const getRemovePlayerInputNumber = (eventMessageText) => {
+const getRemovePlayerInputNumber = (eventMessageText: string): number => {
   const splitedMsg = eventMessageText.split('/-');
   if (splitedMsg.length !== 2) {
     throw new Error('ฟอร์แมตผิด (/- หรือ /-1)');
@@ -41,7 +42,7 @@ const getRemovePlayerInputNumber = (eventMessageText) => {
   return isNaN(number) ? 1 : number;
 };
 
-const addPlayer = async (eventMessageSource, eventMessageText, profile, player: IPlayer): Promise<IEvent> => {
+const addPlayer = async (eventMessageSource: EventSource, eventMessageText: string, profile: Profile, player: IPlayer): Promise<IEvent> => {
   const event = await getCurrentEvent(eventMessageSource);
   if (!event || !event.isCreated) {
     throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
@@ -64,7 +65,7 @@ const addPlayer = async (eventMessageSource, eventMessageText, profile, player: 
   return event;
 };
 
-const create = async (eventMessageSource, eventMessageText, player: IPlayer): Promise<EventDescType> => {
+const create = async (eventMessageSource: EventSource, eventMessageText: string, player: IPlayer): Promise<EventDescType> => {
   const splitedMsg = eventMessageText.split(' ');
   if (splitedMsg.length !== 3) {
     throw new Error('คำสั่งผิดจ้า /สร้าง (สถานที่) (เวลา)');
@@ -116,7 +117,7 @@ const findOneByGroupId = async (groupId: string): Promise<IEvent> => eventDBMode
   groups: groupId
 }, {}, {});
 
-const getEventDesc = (eventModel) => {
+const getEventDesc = (eventModel: IEvent): EventDescType => {
   // if (eventModel.isCreated !== true) {
   //   throw new Error('ยังไม่มีเตะจ้า อยากเปิดพิพม์ /สร้าง (สถานที่) (เวลา)');
   // }
@@ -128,7 +129,7 @@ const getEventDesc = (eventModel) => {
   };
 };
 
-const getCurrentEvent = async (eventMessageSource): Promise<IEvent> => {
+const getCurrentEvent = async (eventMessageSource: EventSource): Promise<IEvent> => {
   const groupId = getGroupId(eventMessageSource);
   if (!groupId) {
     throw new Error('เกิดข้อผิดพลาด ลองใหม่อีกครั้งน้า');
@@ -136,7 +137,7 @@ const getCurrentEvent = async (eventMessageSource): Promise<IEvent> => {
   return await findOneByGroupId(groupId);
 };
 
-const cancelEvent = async (userId: string, eventMessageSource) => {
+const cancelEvent = async (userId: string, eventMessageSource: EventSource): Promise<void> => {
   const player = await playerService.findOneByUserId(userId);
   if (!player) {
     throw new Error('แกไม่มีสิทธิ!!');
@@ -164,7 +165,7 @@ const cancelEvent = async (userId: string, eventMessageSource) => {
   event.save();
 };
 
-const getCurrentEventPlayers = async (eventMessageSource): Promise<Array<IPlayer>> => {
+const getCurrentEventPlayers = async (eventMessageSource: EventSource): Promise<Array<IPlayer>> => {
   const event = await getCurrentEvent(eventMessageSource);
   if (!event) {
     throw new Error('ยังไม่มีใครสร้างอีเว้นท์เล้ย');
@@ -194,7 +195,7 @@ const getCurrentEventPlayers = async (eventMessageSource): Promise<Array<IPlayer
   return allPlayers;
 };
 
-const getCurrentEventPlayerCount = async (eventMessageSource): Promise<number> => {
+const getCurrentEventPlayerCount = async (eventMessageSource: EventSource): Promise<number> => {
   const event = await getCurrentEvent(eventMessageSource);
   if (!event) {
     throw new Error('ยังไม่มีใครสร้างอีเว้นท์เล้ย');
@@ -202,7 +203,7 @@ const getCurrentEventPlayerCount = async (eventMessageSource): Promise<number> =
   return event.players.length || 0;
 };
 
-const removePlayer = async (eventMessageSource, eventMessageText, profile): Promise<IEvent> => {
+const removePlayer = async (eventMessageSource: EventSource, eventMessageText: string, profile: Profile): Promise<IEvent> => {
   const event = await getCurrentEvent(eventMessageSource);
   if (!event || !event.isCreated) {
     throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
