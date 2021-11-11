@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import winston from 'winston';
 
 // define the custom settings for each transport (file, console)
@@ -21,9 +23,9 @@ const logger = winston.createLogger({
   exitOnError: false, // do not exit on handled exceptions
 });
 
-export const logDebug = (message, meta) => logger.debug(message, meta);
-export const logInfo = (message, meta) => logger.info(message, meta);
-export const logWarning = (message, meta) => logger.warn(message, meta);
-export const logError = (message, meta) => logger.error(message, meta);
+export const logDebug = (message: string, meta?: any) => logger.debug(message, meta);
+export const logInfo = (message: string, meta?: any) => logger.info(message, meta);
+export const logWarning = (message: string, meta?: any) => logger.warn(message, meta);
+export const logError = (message: string, meta?: any) => logger.error(message, meta);
 
 export default logger;

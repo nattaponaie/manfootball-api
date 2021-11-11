@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
+      "controllers/*": ["controllers/*"],
       "utils/*": ["utils/*"],
       "middleware/*": ["middleware/*"],
       "templates/*": ["templates/*"],

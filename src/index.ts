@@ -3,8 +3,6 @@ import * as line from '@line/bot-sdk';
 import { get } from 'lodash';
 import mongoose from 'mongoose';
 
-import eventDBModel from 'database/models/event';
-
 import commandsTemplates from 'templates/commands';
 import errorTemplates from 'templates/error';
 import eventTemplates from 'templates/event';
@@ -12,7 +10,7 @@ import playerTemplates from 'templates/player';
 
 import eventService from 'services/event';
 import lineService from 'services/line';
-import peopleService from 'services/people';
+import playerService from 'services/player';
 
 import asyncWrapper from 'middleware/async-wrapper';
 import { logError, logInfo } from 'utils/logger';
@@ -25,6 +23,7 @@ mongoose
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false
     }
   )
   .then(() => logInfo('Connect to MongoDB successfully'))
@@ -38,9 +37,13 @@ const LINE_OA_CONFIG = {
 };
 const lineClient = new line.Client(LINE_OA_CONFIG);
 
-import userController from '../src/controllers/users/controller';
+import { supportApis, defaultApi } from 'controllers';
 
-app.use(userController);
+// Register API routes
+supportApis.forEach((api) => {
+  app.use(`/api/${api.version}`, api.router);
+});
+app.use('/api', defaultApi.router);
 
 router.post(
   '/api/webhook',
@@ -82,24 +85,22 @@ const handleEvent = async (lineClient, event) => {
 
     if (eventType === 'message' && eventMessageType === 'text') {
       const eventMessageText = get(event, ['message', 'text']);
-      const userId = event.source.userId;
 
       if (eventMessageText === '/คำสั่ง') {
         const message = await commandsTemplates.messages();
         return lineClient.replyMessage(event.replyToken, message);
       } else if (eventMessageText.includes('/สร้าง')) {
         try {
-          let eventModel = await eventService.findLatest();
-          if (!eventModel) {
-            eventModel = new eventDBModel();
-          }
+          const eventMessageSource = get(event, 'source');
+          const player = await playerService.assignMissingGroupId(eventMessageSource);
+
           const {
             location,
             locationUrl,
             time,
             totalPlayers,
-          } = eventService.create(eventModel, eventMessageText);
-          eventModel.save();
+          } = await eventService.create(eventMessageSource, eventMessageText, player);
+          
           return lineClient.replyMessage(
             event.replyToken,
             eventTemplates.messages(location, locationUrl, time, totalPlayers)
@@ -112,17 +113,19 @@ const handleEvent = async (lineClient, event) => {
         }
       } else if (eventMessageText.includes('/เตะบอล')) {
         try {
-          let eventModel = await eventService.findLatest();
+          const eventMessageSource = get(event, 'source');
+          const eventModel = await eventService.getCurrentEvent(eventMessageSource);
+
           if (!eventModel) {
-            eventModel = new eventDBModel();
+            throw new Error('ยังไม่มีอีเว้นท์ (หากต้องการสร้าง พิมพ์ /สร้าง)');
           }
+
           const {
             location,
             locationUrl,
             time,
             totalPlayers,
           } = eventService.getEventDesc(eventModel);
-          eventModel.save();
           return lineClient.replyMessage(
             event.replyToken,
             eventTemplates.messages(location, locationUrl, time, totalPlayers)
@@ -135,34 +138,24 @@ const handleEvent = async (lineClient, event) => {
         }
       } else if (eventMessageText.includes('/+')) {
         try {
-          let eventModel = await eventService.findLatest();
-          if (!eventModel) {
-            eventModel = new eventDBModel();
-          }
-          // const groupId = get(event, ['source', 'groupId']);
-          // if (groupId) {
-          //   eventService.addGroupId(eventModel, groupId);
-          // }
+          const eventMessageSource = get(event, 'source');
 
           const profile = await lineService.getUserProfile(
             lineClient,
             event.source
           );
 
-          const {
-            displayName,
-            pictureUrl,
-            totalPlayer,
-            addedCount,
-          } = peopleService.addPlayer(eventModel, eventMessageText, profile);
-          eventModel.save();
+          const player = await playerService.assignMissingGroupId(eventMessageSource);
+          const eventModel = await eventService.addPlayer(eventMessageSource, eventMessageText, profile, player);
+          const addedPlayerInput = eventService.getAddPlayerInputNumber(eventMessageText);
+
           return lineClient.replyMessage(
             event.replyToken,
             playerTemplates.addPlayer(
-              displayName,
-              pictureUrl,
-              totalPlayer,
-              addedCount
+              player.displayName,
+              player.pictureUrl,
+              eventModel.players.length || 0,
+              addedPlayerInput
             )
           );
         } catch (error) {
@@ -173,33 +166,24 @@ const handleEvent = async (lineClient, event) => {
         }
       } else if (eventMessageText.includes('/-')) {
         try {
-          let eventModel = await eventService.findLatest();
-          if (!eventModel) {
-            eventModel = new eventDBModel();
-          }
-          // const groupId = get(event, ['source', 'groupId']);
-          // if (groupId) {
-          //   eventService.addGroupId(eventModel, groupId);
-          // }
+          const eventMessageSource = get(event, 'source');
 
           const profile = await lineService.getUserProfile(
             lineClient,
             event.source
           );
-          const {
-            displayName,
-            pictureUrl,
-            totalPlayer,
-            removedCount,
-          } = peopleService.removePlayer(eventModel, eventMessageText, profile);
-          eventModel.save();
+
+          const player = await playerService.assignMissingGroupId(eventMessageSource);
+          const eventModel = await eventService.removePlayer(eventMessageSource, eventMessageText, profile);
+          const removePlayerInput = eventService.getRemovePlayerInputNumber(eventMessageText);
+
           return lineClient.replyMessage(
             event.replyToken,
             playerTemplates.removePlayer(
-              displayName,
-              pictureUrl,
-              totalPlayer,
-              removedCount
+              player.displayName,
+              player.pictureUrl,
+              eventModel.players.length || 0,
+              removePlayerInput
             )
           );
         } catch (error) {
@@ -210,13 +194,11 @@ const handleEvent = async (lineClient, event) => {
         }
       } else if (eventMessageText.includes('/ใครไปบ้าง')) {
         try {
-          let eventModel = await eventService.findLatest();
-          if (!eventModel) {
-            eventModel = new eventDBModel();
-          }
-          const currentPlayers = peopleService.getCurrentPlayers(eventModel);
-          const allPlayersCount = eventModel.people.players.length;
-          eventModel.save();
+          const eventMessageSource = get(event, 'source');
+
+          const currentPlayers = await eventService.getCurrentEventPlayers(eventMessageSource);
+          const allPlayersCount = await eventService.getCurrentEventPlayerCount(eventMessageSource);
+
           return lineClient.replyMessage(
             event.replyToken,
             playerTemplates.allPlayers(currentPlayers, allPlayersCount)
@@ -229,19 +211,15 @@ const handleEvent = async (lineClient, event) => {
         }
       } else if (eventMessageText.includes('/ยกเลิก')) {
         try {
-          if (userId !== 'U3b611def95ce29fea20ee4f56a9abf2f') {
-            return;
-          }
-          let eventModel = await eventService.findLatest();
-          if (!eventModel) {
-            eventModel = new eventDBModel();
-          }
+          const userId = get(event, ['source', 'userId']);
+          const eventMessageSource = get(event, 'source');
+
+          await eventService.cancelEvent(userId, eventMessageSource);
+
           const profile = await lineService.getUserProfile(
             lineClient,
             event.source
           );
-          eventModel.isCreated = false;
-          eventModel.save();
           return lineClient.replyMessage(
             event.replyToken,
             await errorTemplates.messages(

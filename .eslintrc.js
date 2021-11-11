@@ -5,7 +5,15 @@ module.exports = {
     "node": true,
     "jest": true
   },
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": 7,
     "sourceType": "module"
@@ -25,10 +33,6 @@ module.exports = {
     }
   },
   "rules": {
-    "comma-dangle": [
-      "warn",
-      "always-multiline"
-    ],
     "no-console": [
       "warn"
     ],
@@ -116,14 +120,12 @@ module.exports = {
       2,
       "function"
     ],
-    // "no-catch-shadow": 2,
+    "no-catch-shadow": 2,
     "no-delete-var": 2,
     "no-shadow-restricted-names": 2,
-    // "no-shadow": 2,
     "no-undef-init": 2,
     "no-undef": 2,
     "no-unused-vars": 1,
-    "no-use-before-define": 2,
     "global-require": 2,
     "handle-callback-err": 1,
     "no-new-require": 2,
@@ -159,7 +161,6 @@ module.exports = {
       2,
       "self"
     ],
-    "eol-last": 2,
     "indent": [
       "error",
       2,
@@ -231,7 +232,6 @@ module.exports = {
     "prefer-arrow-callback": 1,
     "prefer-spread": 1,
     "prefer-template": 1,
-    "require-yield": 2,
-    "no-use-before-define": "off"
+    "require-yield": 2
   }
 };

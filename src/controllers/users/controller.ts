@@ -9,7 +9,7 @@ import { logInfo } from 'utils/logger';
 const router = express.Router();
 
 router.get(
-  '/api/users',
+  '/users',
   header('access_token').exists(),
   asyncWrapper(async (req: Request, res: Response) => {
     
